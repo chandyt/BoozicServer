@@ -6,6 +6,9 @@
 *.user
 *.sln.docstates
 
+# Config-Files
+*.config
+
 # Build results
 
 [Dd]ebug/
