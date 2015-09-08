@@ -38,15 +38,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.0.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -78,15 +84,66 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Boozic.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Boozic.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Boozic.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Boozic.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Boozic.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\LocationController.cs" />
+    <Compile Include="Controllers\ProductsController.cs" />
+    <Compile Include="Controllers\SalesController.cs" />
+    <Compile Include="Controllers\StoresController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\StoreInfo.cs" />
+    <Compile Include="Product.cs">
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\BaseContentRepository.cs" />
+    <Compile Include="Repositories\IObjectRepository.cs" />
+    <Compile Include="Repositories\LocationServiceRepository.cs" />
+    <Compile Include="Repositories\ILocationServiceRepository.cs" />
+    <Compile Include="Sale.cs">
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Store.cs">
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Type.cs">
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <EntityDeploy Include="Boozic.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Boozic.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Boozic.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Boozic.edmx</DependentUpon>
+      <LastGenOutput>Boozic.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Boozic.edmx.diagram">
+      <DependentUpon>Boozic.edmx</DependentUpon>
+    </Content>
+    <Content Include="Boozic.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Boozic.edmx</DependentUpon>
+      <LastGenOutput>Boozic.cs</LastGenOutput>
+    </Content>
     <None Include="Properties\PublishProfiles\Boozic.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -97,6 +154,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

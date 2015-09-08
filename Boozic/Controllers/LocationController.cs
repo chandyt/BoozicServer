@@ -62,7 +62,7 @@ namespace Boozic.Controllers
 
              // Generating Parameters for Google Places API
              NameValueCollection GP_Details = new NameValueCollection();
-             GP_Details.Add("key", "AIzaSyDIOwuNBAAWbazsIpaYWcoLkhqsz9s-KaI");
+             GP_Details.Add("key", "AIzaSyDToe2JDLDLKO_FGVDZSaqJULJ7lbscKrA");
              GP_Details.Add("sensor", "false");
              GP_Details.Add("location", Latitude + "," + Longitude);
              GP_Details.Add("radius", Convert.ToString(Radius * 1609)); // Radius is converted to meters for the API
@@ -96,7 +96,7 @@ namespace Boozic.Controllers
 
                      // Generating parameters for Google Matrix API to find the distance and the duration
                      NameValueCollection GM_Details = new NameValueCollection();
-                     GM_Details.Add("key", "AIzaSyDIOwuNBAAWbazsIpaYWcoLkhqsz9s-KaI");
+                     GM_Details.Add("key", "AIzaSyDToe2JDLDLKO_FGVDZSaqJULJ7lbscKrA");
                      GM_Details.Add("origins", Latitude + "," + Longitude);
                      GM_Details.Add("destinations", si.Latitude + "," + si.Longitude);
                      GM_Details.Add("units", "imperial");
