@@ -11,7 +11,8 @@ namespace Boozic.Models
     /// </summary>
     public class StoreInfo
     {
-       
+
+        int storeID;
         string storeName;
         string storeAddress;
         double latitude;
@@ -19,6 +20,13 @@ namespace Boozic.Models
         bool isOpenNow;
         double duration;
         double distance;
+
+        [JsonProperty(PropertyName = "StoreID")]
+        public int StoreID
+        {
+            get { return storeID; }
+            set { storeID = value; }
+        }
 
         [JsonProperty(PropertyName = "StoreName")]
         public string StoreName

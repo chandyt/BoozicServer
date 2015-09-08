@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Boozic.Models;
 
 namespace Boozic.Repositories
 {
-   public interface ILocationServiceRepository
+    public interface ISettingsRepository : IObjectRepository<Setting>
     {
-
-      
-      
+         IEnumerable<Setting> GetAll();
+         
     }
 }
+
+
+
+
+

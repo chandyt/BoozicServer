@@ -12,6 +12,7 @@
         <AssociationConnector Association="BoozicModel.FK_ProductInfo_TypeInfo" ManuallyRouted="false" />
         <AssociationConnector Association="BoozicModel.FK_SaleInfo_ProductInfo" ManuallyRouted="false" />
         <AssociationConnector Association="BoozicModel.FK_SaleInfo_StoreInfo" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="BoozicModel.Setting" Width="1.5" PointX="8.75" PointY="2.875" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
