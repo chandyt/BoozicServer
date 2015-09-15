@@ -55,7 +55,7 @@ namespace Boozic.Controllers
 
         public IHttpActionResult getProductInfo(string UPC)
         {
-            Models.Product p = null;
+            Models.ProductInfo p = null;
             if (UPC!= string.Empty)
             {
               p=  productService.GetByUPC(UPC);

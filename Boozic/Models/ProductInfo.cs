@@ -9,7 +9,7 @@ namespace Boozic.Models
     /// <summary>
     /// This is the modal class that stores the stores data and returned to the users
     /// </summary>
-    public class Product
+    public class ProductInfo
     {
 
         int productId;

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Boozic.Services
 {
-    interface IProductService
+    public interface IProductService
     {
         Product GetById(int aProductID);
-        Models.Product GetByUPC(string aUPC);
+        Models.ProductInfo GetByUPC(string aUPC);
     }
 }

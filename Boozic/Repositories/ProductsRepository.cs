@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 
 namespace Boozic.Repositories
 {
-    public class ProductsRepository : BaseContentRepository<Product>, ISettingsRepository
+    public class ProductsRepository : BaseContentRepository<Product>, IProductsRepository
     {
             public BoozicEntities sdContext { get; private set; }
             public ProductsRepository(BoozicEntities ctx)
@@ -14,6 +15,17 @@ namespace Boozic.Repositories
                 sdContext = ctx;
 
             }
+
+            public IEnumerable<Product> GetAll()
+            {
+                return GetObjectSet();
+            }
+
+            public override DbSet<Product> GetObjectSet()
+            {
+                return sdContext.Products;
+            }
+
             public override Product GetById(object id)
             {
                 if (id is int)
@@ -22,16 +34,16 @@ namespace Boozic.Repositories
                 }
                 return null;
             }
-            public Models.Product GetByUPC(string UPC)
+            public Models.ProductInfo GetByUPC(string UPC)
             {
                 if (UPC != string.Empty)
                 {
                     Product p = sdContext.Products.SingleOrDefault(x => x.UPC == (string)UPC);
-                    Models.Product pr = new Models.Product();
+                    Models.ProductInfo pr = new Models.ProductInfo();
                     pr.ProductId = p.Id;
                     pr.ProductName = p.Name;
                     pr.ProductTypeId = p.TypeId;
-                    pr.ProductType = ""; //TODO: read from table
+                    pr.ProductType = "Test"; //TODO: read from table
                     pr.UPC = p.UPC;
 
                 }

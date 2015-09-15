@@ -26,7 +26,7 @@ namespace Boozic.Services
         {
           return  repository.GetById(aProductID);
         }
-        public Models.Product GetByUPC(string aUPC)
+        public Models.ProductInfo GetByUPC(string aUPC)
         {
             return repository.GetByUPC(aUPC);
         }
