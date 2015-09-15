@@ -4,11 +4,26 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Boozic.Services;
+using Boozic.Repositories;
 
 namespace Boozic.Controllers
 {
     public class ProductsController : ApiController
     {
+         private readonly IProductService productService;
+        /// <summary>
+        /// API function for getting the Liquor store where the User is
+        /// </summary>
+        /// <param name="Latitude">Current Latitude</param>
+        /// <param name="Longitude">Current Longitude</param>
+        /// <returns>XML data about the store</returns>
+
+         public ProductsController()
+        {
+            productService = new ProductService();
+            
+        }
         // GET api/products
         public IEnumerable<string> Get()
         {
@@ -34,6 +49,19 @@ namespace Boozic.Controllers
         // DELETE api/products/5
         public void Delete(int id)
         {
+        }
+
+
+
+        public IHttpActionResult getProductInfo(string UPC)
+        {
+            Models.Product p = null;
+            if (UPC!= string.Empty)
+            {
+              p=  productService.GetByUPC(UPC);
+            }
+
+            return Ok(p);
         }
     }
 }

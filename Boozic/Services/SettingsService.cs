@@ -25,5 +25,10 @@ namespace Boozic.Services
         {
              return repository.GetById(1).Value; 
         }
+
+        public String GetUPCAPIKey()
+        {
+            return repository.GetById(2).Value;
+        }
     }
 }

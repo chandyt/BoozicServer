@@ -11,5 +11,6 @@ namespace Boozic.Services
         Setting GetById(int aSiteSettingId);
         IEnumerable<Setting> GetAll();
         String GetGoogleAPIKey();
+        String GetUPCAPIKey();
     }
 }
