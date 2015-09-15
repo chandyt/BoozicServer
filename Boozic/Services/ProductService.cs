@@ -29,6 +29,7 @@ namespace Boozic.Services
         public Models.ProductInfo GetByUPC(string aUPC)
         {
             return repository.GetByUPC(aUPC);
+
         }
     }
 }
