@@ -31,5 +31,6 @@ namespace Boozic
         public DbSet<Type> Types { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public DbSet<TypesDetail> TypesDetails { get; set; }
+        public DbSet<vwSale> vwSales { get; set; }
     }
 }

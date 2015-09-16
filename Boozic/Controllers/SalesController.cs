@@ -35,5 +35,11 @@ namespace Boozic.Controllers
         public void Delete(int id)
         {
         }
+
+        public IHttpActionResult getSales(int ProductType =0, int ProductParentType=0, int Radius=0, int LowestPrice=0, int HighestPrice=9999999)
+        {
+            //TODO: Get the sales data and do filters based on parameters
+            return Ok(Radius);
+        }
     }
 }

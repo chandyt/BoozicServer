@@ -141,6 +141,9 @@
     <Compile Include="TypesDetail.cs">
       <DependentUpon>Boozic.tt</DependentUpon>
     </Compile>
+    <Compile Include="vwSale.cs">
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -40,8 +40,8 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="StoreName" Type="varchar" MaxLength="50" />
-          <Property Name="Latitude" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Longitude" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Latitude" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Longitude" Type="decimal" Precision="18" Scale="6" />
         </EntityType>
         <EntityType Name="Types">
           <Key>
@@ -57,6 +57,31 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ParentId" Type="int" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Boozic.dbo.vwSales' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwSales">
+          <Key>
+            <PropertyRef Name="SaleId" />
+            <PropertyRef Name="StoreID" />
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="SaleId" Type="int" Nullable="false" />
+          <Property Name="StoreID" Type="int" Nullable="false" />
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="ProductTypeId" Type="int" />
+          <Property Name="ProductParentTypeId" Type="int" />
+          <Property Name="UPC" Type="varchar" MaxLength="50" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="ABV" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Rating" Type="int" />
+          <Property Name="Type" Type="varchar" MaxLength="50" />
+          <Property Name="ProductType" Type="varchar" MaxLength="50" />
+          <Property Name="StoreName" Type="varchar" MaxLength="50" />
+          <Property Name="Latitude" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Longitude" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="LastUpdated" Type="datetime" />
         </EntityType>
         <Association Name="FK_Products_TypesDetail">
           <End Role="TypesDetail" Type="Self.TypesDetail" Multiplicity="1" />
@@ -113,6 +138,26 @@
           <EntitySet Name="Stores" EntityType="Self.Stores" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Types" EntityType="Self.Types" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TypesDetail" EntityType="Self.TypesDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vwSales" EntityType="Self.vwSales" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[vwSales].[SaleId] AS [SaleId], 
+[vwSales].[StoreID] AS [StoreID], 
+[vwSales].[ProductId] AS [ProductId], 
+[vwSales].[ProductTypeId] AS [ProductTypeId], 
+[vwSales].[ProductParentTypeId] AS [ProductParentTypeId], 
+[vwSales].[UPC] AS [UPC], 
+[vwSales].[Name] AS [Name], 
+[vwSales].[Price] AS [Price], 
+[vwSales].[ABV] AS [ABV], 
+[vwSales].[Rating] AS [Rating], 
+[vwSales].[Type] AS [Type], 
+[vwSales].[ProductType] AS [ProductType], 
+[vwSales].[StoreName] AS [StoreName], 
+[vwSales].[Latitude] AS [Latitude], 
+[vwSales].[Longitude] AS [Longitude], 
+[vwSales].[LastUpdated] AS [LastUpdated]
+FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_Products_TypesDetail" Association="Self.FK_Products_TypesDetail">
             <End Role="TypesDetail" EntitySet="TypesDetail" />
             <End Role="Products" EntitySet="Products" />
@@ -165,8 +210,8 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="StoreName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Latitude" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Longitude" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Latitude" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Longitude" Type="Decimal" Precision="18" Scale="6" />
           <NavigationProperty Name="Sales" Relationship="Self.FK_SaleInfo_StoreInfo" FromRole="Stores" ToRole="Sales" />
         </EntityType>
         <EntityType Name="Type">
@@ -224,6 +269,7 @@
             <End Role="Type" EntitySet="Types" />
             <End Role="TypesDetail" EntitySet="TypesDetails" />
           </AssociationSet>
+          <EntitySet Name="vwSales" EntityType="BoozicModel.vwSale" />
         </EntityContainer>
         <EntityType Name="Setting">
           <Key>
@@ -267,6 +313,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="vwSale">
+          <Key>
+            <PropertyRef Name="SaleId" />
+            <PropertyRef Name="StoreID" />
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="SaleId" Type="Int32" Nullable="false" />
+          <Property Name="StoreID" Type="Int32" Nullable="false" />
+          <Property Name="ProductId" Type="Int32" Nullable="false" />
+          <Property Name="ProductTypeId" Type="Int32" />
+          <Property Name="ProductParentTypeId" Type="Int32" />
+          <Property Name="UPC" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="ABV" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Rating" Type="Int32" />
+          <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProductType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StoreName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Latitude" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Longitude" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="LastUpdated" Type="DateTime" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -329,6 +398,28 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwSales">
+            <EntityTypeMapping TypeName="BoozicModel.vwSale">
+              <MappingFragment StoreEntitySet="vwSales">
+                <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="StoreName" ColumnName="StoreName" />
+                <ScalarProperty Name="ProductType" ColumnName="ProductType" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="ABV" ColumnName="ABV" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UPC" ColumnName="UPC" />
+                <ScalarProperty Name="ProductParentTypeId" ColumnName="ProductParentTypeId" />
+                <ScalarProperty Name="ProductTypeId" ColumnName="ProductTypeId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="StoreID" ColumnName="StoreID" />
+                <ScalarProperty Name="SaleId" ColumnName="SaleId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

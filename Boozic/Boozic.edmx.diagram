@@ -15,6 +15,7 @@
         <EntityTypeShape EntityType="BoozicModel.TypesDetail" Width="1.5" PointX="2.375" PointY="4.625" />
         <AssociationConnector Association="BoozicModel.FK_Products_TypesDetail" />
         <AssociationConnector Association="BoozicModel.FK_TypesDetail_Types" />
+        <EntityTypeShape EntityType="BoozicModel.vwSale" Width="1.5" PointX="4.375" PointY="4.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
