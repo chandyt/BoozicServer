@@ -23,6 +23,8 @@ namespace Boozic
         public string Name { get; set; }
         public int TypeId { get; set; }
         public string UPC { get; set; }
+        public Nullable<decimal> ABV { get; set; }
+        public Nullable<int> Rating { get; set; }
     
         public virtual Type Type { get; set; }
         public virtual ICollection<Sale> Sales { get; set; }

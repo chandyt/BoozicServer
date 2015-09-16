@@ -13,6 +13,8 @@
           <Property Name="Name" Type="varchar" MaxLength="50" />
           <Property Name="TypeId" Type="int" Nullable="false" />
           <Property Name="UPC" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ABV" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Rating" Type="int" />
         </EntityType>
         <EntityType Name="Sales">
           <Key>
@@ -117,6 +119,8 @@
           <Property Name="UPC" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Type" Relationship="Self.FK_ProductInfo_TypeInfo" FromRole="Products" ToRole="Types" />
           <NavigationProperty Name="Sales" Relationship="Self.FK_SaleInfo_ProductInfo" FromRole="Products" ToRole="Sales" />
+          <Property Name="ABV" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Rating" Type="Int32" />
         </EntityType>
         <EntityType Name="Sale">
           <Key>
@@ -220,6 +224,8 @@
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="BoozicModel.Product">
               <MappingFragment StoreEntitySet="Products">
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="ABV" ColumnName="ABV" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="TypeId" ColumnName="TypeId" />
