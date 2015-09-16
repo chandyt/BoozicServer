@@ -30,5 +30,6 @@ namespace Boozic
         public DbSet<Store> Stores { get; set; }
         public DbSet<Type> Types { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<TypesDetail> TypesDetails { get; set; }
     }
 }

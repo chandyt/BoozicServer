@@ -12,16 +12,18 @@ namespace Boozic
     using System;
     using System.Collections.Generic;
     
-    public partial class Type
+    public partial class TypesDetail
     {
-        public Type()
+        public TypesDetail()
         {
-            this.TypesDetails = new HashSet<TypesDetail>();
+            this.Products = new HashSet<Product>();
         }
     
         public int Id { get; set; }
-        public string Type1 { get; set; }
+        public int ParentId { get; set; }
+        public string Description { get; set; }
     
-        public virtual ICollection<TypesDetail> TypesDetails { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
+        public virtual Type Type { get; set; }
     }
 }

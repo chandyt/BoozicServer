@@ -26,7 +26,7 @@ namespace Boozic
         public Nullable<decimal> ABV { get; set; }
         public Nullable<int> Rating { get; set; }
     
-        public virtual Type Type { get; set; }
         public virtual ICollection<Sale> Sales { get; set; }
+        public virtual TypesDetail TypesDetail { get; set; }
     }
 }
