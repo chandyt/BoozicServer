@@ -21,7 +21,8 @@ namespace Boozic.Controllers
 
          public ProductsController()
         {
-            productService = new ProductService();
+            
+            productService = new ProductService(new ProductsRepository(new BoozicEntities()));
             
         }
         // GET api/products
@@ -58,7 +59,14 @@ namespace Boozic.Controllers
             Models.ProductInfo p = null;
             if (UPC!= string.Empty)
             {
+                //0085976033931
+                //5410316442930
               p=  productService.GetByUPC(UPC);
+              if (p.UPC == null)
+              {
+                  p.ProductName = productService.getProductName(UPC);
+                    
+              }
             }
 
             return Ok(p);

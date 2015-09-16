@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
@@ -40,14 +41,26 @@ namespace Boozic.Repositories
                 {
                     Product p = sdContext.Products.SingleOrDefault(x => x.UPC == (string)UPC);
                     Models.ProductInfo pr = new Models.ProductInfo();
-                    pr.ProductId = p.Id;
-                    pr.ProductName = p.Name;
-                    pr.ProductTypeId = p.TypeId;
-                    pr.ProductType = "Test"; //TODO: read from table
-                    pr.UPC = p.UPC;
+                    if (pr.UPC != null)
+                    {
+                        pr.ProductId = p.Id;
+                        pr.ProductName = p.Name;
+                        pr.ProductTypeId = p.TypeId;
+                        pr.ProductType = "Test"; //TODO: read from table
+                        pr.UPC = p.UPC;
+
+                    }
+                    else // TODO: Read from API
+                    { 
+                        
+                    }
+                    return pr;
 
                 }
                 return null;
             }
+
+
+
     }
 }
