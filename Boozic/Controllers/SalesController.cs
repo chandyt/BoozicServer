@@ -4,11 +4,20 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Boozic.Services;
+using Boozic.Repositories;
 
 namespace Boozic.Controllers
 {
     public class SalesController : ApiController
     {
+        private readonly ISalesService salesService;
+        public SalesController()
+        {
+
+            salesService = new SalesService(new SalesRepository(new BoozicEntities()));
+            
+        }
         // GET api/sales
         public IEnumerable<string> Get()
         {
@@ -36,10 +45,10 @@ namespace Boozic.Controllers
         {
         }
 
-        public IHttpActionResult getSales(int ProductType =0, int ProductParentType=0, int Radius=0, int LowestPrice=0, int HighestPrice=9999999)
+        public IHttpActionResult getSales(int ProductTypeId =0, int ProductParentTypeId=0, int Radius=0, int LowestPrice=0, int HighestPrice=9999999)
         {
-            //TODO: Get the sales data and do filters based on parameters
-            return Ok(Radius);
+           List<vwSale> Sales= salesService.getSales(ProductTypeId ,  ProductParentTypeId,  Radius,  LowestPrice,  HighestPrice);
+           return Ok(Sales);
         }
     }
 }

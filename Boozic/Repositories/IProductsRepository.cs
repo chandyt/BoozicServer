@@ -9,7 +9,7 @@ namespace Boozic.Repositories
     public interface IProductsRepository: IObjectRepository<Product>
     {
          IEnumerable<Product> GetAll();
-         Models.ProductInfo GetByUPC(string UPC);
+        Models.ProductInfo GetByUPC(string UPC);
       }
 
 }
