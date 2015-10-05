@@ -25,6 +25,7 @@ namespace Boozic
         public string UPC { get; set; }
         public Nullable<decimal> ABV { get; set; }
         public Nullable<int> Rating { get; set; }
+        public string SizeInfo { get; set; }
     
         public virtual ICollection<Sale> Sales { get; set; }
         public virtual TypesDetail TypesDetail { get; set; }

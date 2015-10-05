@@ -10,6 +10,6 @@ namespace Boozic.Services
     {
         Product GetById(int aProductID);
         Models.ProductInfo GetByUPC(string aUPC);
-        String getProductName(string aUPC);
+        Models.ProductInfo getProductUsingAPI(string aUPC);
     }
 }

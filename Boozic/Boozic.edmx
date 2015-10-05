@@ -15,6 +15,7 @@
           <Property Name="UPC" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ABV" Type="decimal" Precision="18" Scale="0" />
           <Property Name="Rating" Type="int" />
+          <Property Name="SizeInfo" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="Sales">
           <Key>
@@ -191,6 +192,7 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           <Property Name="ABV" Type="Decimal" Precision="18" Scale="0" />
           <Property Name="Rating" Type="Int32" />
           <NavigationProperty Name="TypesDetail" Relationship="BoozicModel.FK_Products_TypesDetail" FromRole="Product" ToRole="TypesDetail" />
+          <Property Name="SizeInfo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Sale">
           <Key>
@@ -345,6 +347,7 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="BoozicModel.Product">
               <MappingFragment StoreEntitySet="Products">
+                <ScalarProperty Name="SizeInfo" ColumnName="SizeInfo" />
                 <ScalarProperty Name="Rating" ColumnName="Rating" />
                 <ScalarProperty Name="ABV" ColumnName="ABV" />
                 <ScalarProperty Name="Id" ColumnName="Id" />

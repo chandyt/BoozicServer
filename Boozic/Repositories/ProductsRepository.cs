@@ -48,6 +48,8 @@ namespace Boozic.Repositories
                         pr.ProductTypeId = p.TypeId;
                         pr.ProductType = "Test"; //TODO: read from table
                         pr.UPC = p.UPC;
+                        pr.SizeInfo = p.SizeInfo;
+                        pr.IsFoundInDatabase = true;
 
                     }
                     else // TODO: Read from API

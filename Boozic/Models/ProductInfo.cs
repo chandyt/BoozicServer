@@ -18,6 +18,8 @@ namespace Boozic.Models
         string productType;
         double abv;
         string upc;
+        string sizeInfo;
+        bool isFoundInDatabase;
         
         [JsonProperty(PropertyName = "ProductID")]
         public int ProductId
@@ -61,6 +63,20 @@ namespace Boozic.Models
             set { abv = value; }
         }
 
+
+        [JsonProperty(PropertyName = "SizeInfo")]
+        public string SizeInfo
+        {
+            get { return sizeInfo; }
+            set { sizeInfo = value; }
+        }
+
+        [JsonProperty(PropertyName = "IsFoundInDatabase")]
+        public bool IsFoundInDatabase
+        {
+            get { return isFoundInDatabase; }
+            set { isFoundInDatabase = value; }
+        }
 
 
     }

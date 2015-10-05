@@ -64,7 +64,7 @@ namespace Boozic.Controllers
               p=  productService.GetByUPC(UPC);
               if (p.UPC == null)
               {
-                  p.ProductName = productService.getProductName(UPC);
+                  p = productService.getProductUsingAPI(UPC);
                     
               }
             }
