@@ -30,5 +30,11 @@ namespace Boozic.Services
         {
             return repository.GetById(2).Value;
         }
+
+        public String GetGCMServerAPIKey()
+        {
+            return repository.GetById(4).Value;
+        }
+
     }
 }

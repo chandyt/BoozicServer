@@ -12,5 +12,7 @@ namespace Boozic.Services
         IEnumerable<Setting> GetAll();
         String GetGoogleAPIKey();
         String GetUPCAPIKey();
+        String GetGCMServerAPIKey();
+
     }
 }

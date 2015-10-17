@@ -104,10 +104,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Boozic.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\GCMController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\SalesController.cs" />
     <Compile Include="Controllers\StoresController.cs" />
+    <Compile Include="GCMRegKey.cs">
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -118,6 +122,8 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BaseContentRepository.cs" />
+    <Compile Include="Repositories\GCMRepository.cs" />
+    <Compile Include="Repositories\IGCMRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\IProductsRepository.cs" />
     <Compile Include="Repositories\ISalesRepsitory.cs" />
@@ -130,6 +136,8 @@
     <Compile Include="Sale.cs">
       <DependentUpon>Boozic.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\GCMService.cs" />
+    <Compile Include="Services\IGCMService.cs" />
     <Compile Include="Services\ILocationService.cs" />
     <Compile Include="Services\IProductService.cs" />
     <Compile Include="Services\ISalesService.cs" />

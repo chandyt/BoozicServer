@@ -5,6 +5,15 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="BoozicModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="GCMRegKey">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DeviceId" Type="varchar" MaxLength="50" />
+          <Property Name="RegistrationToken" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="RegisterdOn" Type="datetime" />
+        </EntityType>
         <EntityType Name="Products">
           <Key>
             <PropertyRef Name="Id" />
@@ -133,6 +142,7 @@ warning 6002: The table/view 'Boozic.dbo.vwSales' does not have a primary key de
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="BoozicModelStoreContainer">
+          <EntitySet Name="GCMRegKey" EntityType="Self.GCMRegKey" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sales" EntityType="Self.Sales" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Settings" EntityType="Self.Settings" Schema="dbo" store:Type="Tables" />
@@ -272,6 +282,7 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
             <End Role="TypesDetail" EntitySet="TypesDetails" />
           </AssociationSet>
           <EntitySet Name="vwSales" EntityType="BoozicModel.vwSale" />
+          <EntitySet Name="GCMRegKeys" EntityType="BoozicModel.GCMRegKey" />
         </EntityContainer>
         <EntityType Name="Setting">
           <Key>
@@ -337,6 +348,15 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           <Property Name="Latitude" Type="Decimal" Precision="18" Scale="6" />
           <Property Name="Longitude" Type="Decimal" Precision="18" Scale="6" />
           <Property Name="LastUpdated" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="GCMRegKey">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DeviceId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RegisterdOn" Type="DateTime" Precision="3" />
+          <Property Name="RegistrationToken" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -423,6 +443,16 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
                 <ScalarProperty Name="StoreID" ColumnName="StoreID" />
                 <ScalarProperty Name="SaleId" ColumnName="SaleId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GCMRegKeys">
+            <EntityTypeMapping TypeName="BoozicModel.GCMRegKey">
+              <MappingFragment StoreEntitySet="GCMRegKey">
+                <ScalarProperty Name="RegistrationToken" ColumnName="RegistrationToken" />
+                <ScalarProperty Name="RegisterdOn" ColumnName="RegisterdOn" />
+                <ScalarProperty Name="DeviceId" ColumnName="DeviceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
