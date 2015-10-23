@@ -27,7 +27,9 @@ namespace Boozic.Controllers
         [HttpGet]
         public IHttpActionResult addGCMRegkey(string RegKey, string DeviceId)
         {
-            if (gcmService.GetByDeviceID(DeviceId)==null)
+            //TODO if Token is differnet
+            GCMRegKey aRegKey = gcmService.GetByDeviceID(DeviceId);
+            if (aRegKey==null)
             {
                 GCMRegKey aKey=new GCMRegKey();
                 aKey.DeviceId = DeviceId;
@@ -35,6 +37,12 @@ namespace Boozic.Controllers
                 aKey.RegisterdOn = DateTime.Now;
                 gcmService.Add(aKey);
                 
+            }
+            else if (aRegKey.RegistrationToken != RegKey)
+            {
+               aRegKey.RegistrationToken = RegKey;
+               aRegKey.RegisterdOn = DateTime.Now;
+               gcmService.Update(aRegKey);
             }
             return Ok("Key Added");
         }

@@ -26,9 +26,16 @@ namespace Boozic.Repositories
             return sdContext.GCMRegKeys;
         }
 
-        public void Add(GCMRegKey RegKey)
+        public void Add(GCMRegKey aRegKey)
         {
-            sdContext.GCMRegKeys.Add(RegKey);
+            sdContext.GCMRegKeys.Add(aRegKey);
+            sdContext.SaveChanges();
+        }
+
+        public void Update(GCMRegKey aRegKey)
+        {
+            GCMRegKey RegKey = GetById(aRegKey.Id);
+            RegKey.RegistrationToken = aRegKey.RegistrationToken;
             sdContext.SaveChanges();
         }
 

@@ -47,6 +47,7 @@ namespace Boozic.Controllers
 
         public IHttpActionResult getSales(int ProductTypeId =0, int ProductParentTypeId=0, int Radius=0, int LowestPrice=0, int HighestPrice=9999999)
         {
+            //Add rating and ABV filter
            List<vwSale> Sales= salesService.getSales(ProductTypeId ,  ProductParentTypeId,  Radius,  LowestPrice,  HighestPrice);
            return Ok(Sales);
         }

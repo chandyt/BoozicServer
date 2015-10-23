@@ -9,8 +9,8 @@ namespace Boozic.Repositories
    public interface IGCMRepository : IObjectRepository<GCMRegKey>
     {
         IEnumerable<GCMRegKey> GetAll();
-        void Add(GCMRegKey RegKey);
-
+        void Add(GCMRegKey aRegKey);
+        void Update(GCMRegKey aRegKey);
         GCMRegKey GetByDeviceID(string DeviceID);
 
     }

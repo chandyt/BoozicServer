@@ -24,6 +24,11 @@ namespace Boozic.Services
             repository.Add(aRegKey);
         }
 
+        public void Update(GCMRegKey aRegKey)
+        {
+            repository.Update(aRegKey);
+        }
+
         public GCMRegKey GetByDeviceID(string DeviceId)
         {
             return repository.GetByDeviceID(DeviceId);
@@ -36,7 +41,7 @@ namespace Boozic.Services
 
             string GoogleAPIKey = appSettingsService.GetGCMServerAPIKey();
             //TODO: update deviceId
-            string DeviceID = repository.GetByDeviceID("794e6e0e3487c59e").RegistrationToken; 
+            string RegToken = repository.GetByDeviceID("794e6e0e3487c59e").RegistrationToken; 
 
             HttpWebRequest Request = (HttpWebRequest)WebRequest.Create("https://android.googleapis.com/gcm/send");
             Request.Method = "POST";
@@ -44,7 +49,7 @@ namespace Boozic.Services
             Request.ContentType = "application/json";
             Request.Headers.Add(string.Format("Authorization: key={0}", GoogleAPIKey));
 
-            string postData = "{ \"registration_ids\": [ \"" + DeviceID + "\" ] ,\"notification\": {\"body\": \"" + message + "\", \"collapse_key\":\"" + message + "\"}}";
+            string postData = "{ \"registration_ids\": [ \"" + RegToken + "\" ] ,\"notification\": {\"body\": \"" + message + "\", \"collapse_key\":\"" + message + "\"}}";
 
            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
             

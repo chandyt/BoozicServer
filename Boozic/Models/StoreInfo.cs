@@ -68,7 +68,7 @@ namespace Boozic.Models
         /// <summary>
         /// Duration in Seconds
         /// </summary>
-        [JsonProperty(PropertyName = "DurationInMinutes")]
+        [JsonProperty(PropertyName = "DurationInSeconds")]
         public double Duration
         {
             get { return duration; }

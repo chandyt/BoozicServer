@@ -9,7 +9,7 @@ namespace Boozic.Services
     public interface IGCMService
     {
         void Add(GCMRegKey aRegKey);
-
+        void Update(GCMRegKey aRegKey);
         GCMRegKey GetByDeviceID(string DeviceId);
         string SendNotification( string message);
     }
