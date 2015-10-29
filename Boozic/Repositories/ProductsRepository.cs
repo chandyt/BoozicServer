@@ -57,7 +57,7 @@ namespace Boozic.Repositories
 
         }
 
-        public List<vwProductsWithStorePrice> filterProducts(decimal latitude, decimal longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 0, int LowestPrice = 0,
+        public List<Models.ProductInfo> filterProducts(decimal latitude, decimal longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 0, int LowestPrice = 0,
                                 int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
                                 bool SortByProductType = false, bool SortByDistance = false, bool SortByPrice = true, bool SortByRating = false,
                                 bool SortAscending = true)
@@ -137,7 +137,7 @@ namespace Boozic.Repositories
                 }
 
               
-                //TODO: Calculate for radius
+                //TODO: Calculate for radius Change the output to product info
                 return Sales;
             }
 

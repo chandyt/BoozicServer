@@ -21,6 +21,7 @@ namespace Boozic.Models
         //string volumeUnit;
         //double volume;
         bool isFoundInDatabase;
+        decimal distanceCalcualted;
         
         //[JsonProperty(PropertyName = "ProductID")]
         //public int ProductId
@@ -86,6 +87,12 @@ namespace Boozic.Models
             set { isFoundInDatabase = value; }
         }
 
+        [JsonProperty(PropertyName = "DistanceCalculated")]
+        public decimal DistanceCalculated
+        {
+            get { return distanceCalcualted; }
+            set { distanceCalcualted = value; }
+        }
 
     }
 

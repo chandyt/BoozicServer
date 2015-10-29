@@ -79,7 +79,7 @@ namespace Boozic.Controllers
                                     bool SortAscending = true)
         {
             //Add rating and ABV filter
-            List<vwProductsWithStorePrice> products = productService.filterProducts(0,0,ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice);
+            List<Models.ProductInfo> products = productService.filterProducts(0, 0, ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice);
             return Ok(products);
         }
     }
