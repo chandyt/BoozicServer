@@ -27,7 +27,7 @@ namespace Boozic.test
         public void getSales_shouldPass()
         {
             // Arrange
-            SalesService service = new SalesService(aMockRepository.Object);
+            FilterService service = new FilterService(aMockRepository.Object);
             aMockRepository.Setup(aService => aService.getSales(2,1,1,1,1)).Returns(saleList);
 
             // Act
@@ -41,7 +41,7 @@ namespace Boozic.test
         public void getSales_shouldFail()
         {
             // Arrange
-            SalesService service = new SalesService(aMockRepository.Object);
+            FilterService service = new FilterService(aMockRepository.Object);
             aMockRepository.Setup(aService => aService.getSales(1, 1, 1, 1, 1)).Returns(saleList);
 
             // Act

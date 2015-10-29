@@ -26,12 +26,14 @@ namespace Boozic
         }
     
         public DbSet<Product> Products { get; set; }
-        public DbSet<Sale> Sales { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<Type> Types { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public DbSet<TypesDetail> TypesDetails { get; set; }
-        public DbSet<vwSale> vwSales { get; set; }
         public DbSet<GCMRegKey> GCMRegKeys { get; set; }
+        public DbSet<ProductRating> ProductRatings { get; set; }
+        public DbSet<ProductsPrice> ProductsPrices { get; set; }
+        public DbSet<UserProductRating> UserProductRatings { get; set; }
+        public DbSet<vwProductsWithStorePrice> vwProductsWithStorePrices { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace Boozic.test.ControllerTests
             sale2
         };
 
-        private SalesController controller;
+        private FilterController controller;
 
 
 
@@ -34,7 +34,7 @@ namespace Boozic.test.ControllerTests
         public void Init()
         {
             aMockSalesService = new Mock<ISalesService>();
-           controller= new SalesController();
+           controller= new FilterController();
     
         }
 

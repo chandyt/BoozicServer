@@ -6,17 +6,21 @@
     <edmx:Diagrams>
       <Diagram DiagramId="71619db5f9bf4c5fb40f8b61f2c0b67f" Name="Diagram1">
         <EntityTypeShape EntityType="BoozicModel.Product" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="BoozicModel.Sale" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="BoozicModel.Store" Width="1.5" PointX="7.625" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="BoozicModel.Type" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
-        <AssociationConnector Association="BoozicModel.FK_SaleInfo_ProductInfo" ManuallyRouted="false" />
-        <AssociationConnector Association="BoozicModel.FK_SaleInfo_StoreInfo" ManuallyRouted="false" />
         <EntityTypeShape EntityType="BoozicModel.Setting" Width="1.5" PointX="7.375" PointY="4.375" />
-        <EntityTypeShape EntityType="BoozicModel.TypesDetail" Width="1.5" PointX="2.375" PointY="4.625" />
-        <AssociationConnector Association="BoozicModel.FK_Products_TypesDetail" />
+        <EntityTypeShape EntityType="BoozicModel.TypesDetail" Width="1.5" PointX="0.5" PointY="5" />
         <AssociationConnector Association="BoozicModel.FK_TypesDetail_Types" />
-        <EntityTypeShape EntityType="BoozicModel.vwSale" Width="1.5" PointX="4.375" PointY="4.75" />
         <EntityTypeShape EntityType="BoozicModel.GCMRegKey" Width="1.5" PointX="9.5" PointY="3.75" />
+        <EntityTypeShape EntityType="BoozicModel.ProductRating" Width="1.5" PointX="5.25" PointY="5.125" />
+        <EntityTypeShape EntityType="BoozicModel.ProductsPrice" Width="1.5" PointX="9.875" PointY="0.75" />
+        <EntityTypeShape EntityType="BoozicModel.UserProductRating" Width="1.5" PointX="11.875" PointY="3.75" />
+        <AssociationConnector Association="BoozicModel.FK_ProductRatings_Products" />
+        <AssociationConnector Association="BoozicModel.FK_SaleInfo_ProductInfo1" />
+        <AssociationConnector Association="BoozicModel.FK_UserProductRating_Products" />
+        <AssociationConnector Association="BoozicModel.FK_SaleInfo_StoreInfo1" />
+        <EntityTypeShape EntityType="BoozicModel.vwProductsWithStorePrice" Width="1.5" PointX="0.75" PointY="7.75" />
+        <AssociationConnector Association="BoozicModel.FK_Products_TypesDetail1" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

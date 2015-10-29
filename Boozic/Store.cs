@@ -16,7 +16,7 @@ namespace Boozic
     {
         public Store()
         {
-            this.Sales = new HashSet<Sale>();
+            this.ProductsPrices = new HashSet<ProductsPrice>();
         }
     
         public int Id { get; set; }
@@ -24,6 +24,6 @@ namespace Boozic
         public Nullable<decimal> Latitude { get; set; }
         public Nullable<decimal> Longitude { get; set; }
     
-        public virtual ICollection<Sale> Sales { get; set; }
+        public virtual ICollection<ProductsPrice> ProductsPrices { get; set; }
     }
 }

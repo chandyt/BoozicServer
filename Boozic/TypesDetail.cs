@@ -16,14 +16,14 @@ namespace Boozic
     {
         public TypesDetail()
         {
-            this.Products = new HashSet<Product>();
+            this.Products1 = new HashSet<Product>();
         }
     
         public int Id { get; set; }
         public int ParentId { get; set; }
         public string Description { get; set; }
     
-        public virtual ICollection<Product> Products { get; set; }
         public virtual Type Type { get; set; }
+        public virtual ICollection<Product> Products1 { get; set; }
     }
 }

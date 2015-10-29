@@ -16,18 +16,22 @@ namespace Boozic
     {
         public Product()
         {
-            this.Sales = new HashSet<Sale>();
+            this.ProductsPrices = new HashSet<ProductsPrice>();
+            this.UserProductRatings = new HashSet<UserProductRating>();
         }
     
         public int Id { get; set; }
         public string Name { get; set; }
-        public int TypeId { get; set; }
         public string UPC { get; set; }
         public Nullable<decimal> ABV { get; set; }
-        public Nullable<int> Rating { get; set; }
-        public string SizeInfo { get; set; }
+        public Nullable<decimal> Volume { get; set; }
+        public string VolumeUnit { get; set; }
+        public string ContainerType { get; set; }
+        public int TypeDetailsId { get; set; }
     
-        public virtual ICollection<Sale> Sales { get; set; }
-        public virtual TypesDetail TypesDetail { get; set; }
+        public virtual ProductRating ProductRating { get; set; }
+        public virtual ICollection<ProductsPrice> ProductsPrices { get; set; }
+        public virtual ICollection<UserProductRating> UserProductRatings { get; set; }
+        public virtual TypesDetail TypesDetail1 { get; set; }
     }
 }

@@ -12,15 +12,16 @@ namespace Boozic
     using System;
     using System.Collections.Generic;
     
-    public partial class Sale
+    public partial class ProductRating
     {
-        public int Id { get; set; }
-        public int StoreID { get; set; }
         public int ProductId { get; set; }
-        public Nullable<System.DateTime> LastUpdated { get; set; }
-        public Nullable<decimal> Price { get; set; }
+        public Nullable<int> Rating1 { get; set; }
+        public Nullable<int> Rating2 { get; set; }
+        public Nullable<int> Rating3 { get; set; }
+        public Nullable<int> Rating4 { get; set; }
+        public Nullable<int> Rating5 { get; set; }
+        public Nullable<decimal> CombinedRating { get; set; }
     
         public virtual Product Product { get; set; }
-        public virtual Store Store { get; set; }
     }
 }

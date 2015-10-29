@@ -14,19 +14,32 @@
           <Property Name="RegistrationToken" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="RegisterdOn" Type="datetime" />
         </EntityType>
+        <EntityType Name="ProductRatings">
+          <Key>
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="Rating1" Type="int" />
+          <Property Name="Rating2" Type="int" />
+          <Property Name="Rating3" Type="int" />
+          <Property Name="Rating4" Type="int" />
+          <Property Name="Rating5" Type="int" />
+          <Property Name="CombinedRating" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
         <EntityType Name="Products">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" />
-          <Property Name="TypeId" Type="int" Nullable="false" />
+          <Property Name="TypeDetailsId" Type="int" Nullable="false" />
           <Property Name="UPC" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ABV" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Rating" Type="int" />
-          <Property Name="SizeInfo" Type="varchar" MaxLength="100" />
+          <Property Name="Volume" Type="decimal" Precision="8" Scale="3" />
+          <Property Name="VolumeUnit" Type="varchar" MaxLength="20" />
+          <Property Name="ContainerType" Type="varchar" MaxLength="50" />
         </EntityType>
-        <EntityType Name="Sales">
+        <EntityType Name="ProductsPrice">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -34,7 +47,7 @@
           <Property Name="StoreID" Type="int" Nullable="false" />
           <Property Name="ProductId" Type="int" Nullable="false" />
           <Property Name="LastUpdated" Type="datetime" />
-          <Property Name="Price" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="3" />
         </EntityType>
         <EntityType Name="Settings">
           <Key>
@@ -68,9 +81,18 @@
           <Property Name="ParentId" Type="int" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="UserProductRating">
+          <Key>
+            <PropertyRef Name="DeviceId" />
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="DeviceId" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Rating" Type="int" />
+          <Property Name="ProductId" Type="int" Nullable="false" />
+        </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Boozic.dbo.vwSales' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="vwSales">
+warning 6002: The table/view 'Boozic.dbo.vwProductsWithStorePrice' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vwProductsWithStorePrice">
           <Key>
             <PropertyRef Name="SaleId" />
             <PropertyRef Name="StoreID" />
@@ -82,17 +104,37 @@ warning 6002: The table/view 'Boozic.dbo.vwSales' does not have a primary key de
           <Property Name="ProductTypeId" Type="int" />
           <Property Name="ProductParentTypeId" Type="int" />
           <Property Name="UPC" Type="varchar" MaxLength="50" />
-          <Property Name="Name" Type="varchar" MaxLength="50" />
-          <Property Name="Price" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="ProductName" Type="varchar" MaxLength="50" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="3" />
           <Property Name="ABV" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Rating" Type="int" />
           <Property Name="Type" Type="varchar" MaxLength="50" />
           <Property Name="ProductType" Type="varchar" MaxLength="50" />
+          <Property Name="Volume" Type="decimal" Precision="8" Scale="3" />
+          <Property Name="VolumeUnit" Type="varchar" MaxLength="20" />
+          <Property Name="ContainerType" Type="varchar" MaxLength="50" />
           <Property Name="StoreName" Type="varchar" MaxLength="50" />
           <Property Name="Latitude" Type="decimal" Precision="18" Scale="6" />
           <Property Name="Longitude" Type="decimal" Precision="18" Scale="6" />
           <Property Name="LastUpdated" Type="datetime" />
+          <Property Name="Rating1" Type="int" />
+          <Property Name="Rating2" Type="int" />
+          <Property Name="Rating3" Type="int" />
+          <Property Name="Rating4" Type="int" />
+          <Property Name="Rating5" Type="int" />
+          <Property Name="CombinedRating" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
+        <Association Name="FK_ProductRatings_Products">
+          <End Role="Products" Type="Self.Products" Multiplicity="1" />
+          <End Role="ProductRatings" Type="Self.ProductRatings" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProductRatings">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Products_TypesDetail">
           <End Role="TypesDetail" Type="Self.TypesDetail" Multiplicity="1" />
           <End Role="Products" Type="Self.Products" Multiplicity="*" />
@@ -101,30 +143,30 @@ warning 6002: The table/view 'Boozic.dbo.vwSales' does not have a primary key de
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Products">
-              <PropertyRef Name="TypeId" />
+              <PropertyRef Name="TypeDetailsId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SaleInfo_ProductInfo">
           <End Role="Products" Type="Self.Products" Multiplicity="1" />
-          <End Role="Sales" Type="Self.Sales" Multiplicity="*" />
+          <End Role="ProductsPrice" Type="Self.ProductsPrice" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Products">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Sales">
+            <Dependent Role="ProductsPrice">
               <PropertyRef Name="ProductId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SaleInfo_StoreInfo">
           <End Role="Stores" Type="Self.Stores" Multiplicity="1" />
-          <End Role="Sales" Type="Self.Sales" Multiplicity="*" />
+          <End Role="ProductsPrice" Type="Self.ProductsPrice" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Stores">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Sales">
+            <Dependent Role="ProductsPrice">
               <PropertyRef Name="StoreID" />
             </Dependent>
           </ReferentialConstraint>
@@ -141,49 +183,79 @@ warning 6002: The table/view 'Boozic.dbo.vwSales' does not have a primary key de
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_UserProductRating_Products">
+          <End Role="Products" Type="Self.Products" Multiplicity="1" />
+          <End Role="UserProductRating" Type="Self.UserProductRating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProductRating">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="BoozicModelStoreContainer">
           <EntitySet Name="GCMRegKey" EntityType="Self.GCMRegKey" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductRatings" EntityType="Self.ProductRatings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Sales" EntityType="Self.Sales" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductsPrice" EntityType="Self.ProductsPrice" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Settings" EntityType="Self.Settings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Stores" EntityType="Self.Stores" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Types" EntityType="Self.Types" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TypesDetail" EntityType="Self.TypesDetail" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="vwSales" EntityType="Self.vwSales" store:Type="Views" store:Schema="dbo">
+          <EntitySet Name="UserProductRating" EntityType="Self.UserProductRating" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vwProductsWithStorePrice" EntityType="Self.vwProductsWithStorePrice" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
-[vwSales].[SaleId] AS [SaleId], 
-[vwSales].[StoreID] AS [StoreID], 
-[vwSales].[ProductId] AS [ProductId], 
-[vwSales].[ProductTypeId] AS [ProductTypeId], 
-[vwSales].[ProductParentTypeId] AS [ProductParentTypeId], 
-[vwSales].[UPC] AS [UPC], 
-[vwSales].[Name] AS [Name], 
-[vwSales].[Price] AS [Price], 
-[vwSales].[ABV] AS [ABV], 
-[vwSales].[Rating] AS [Rating], 
-[vwSales].[Type] AS [Type], 
-[vwSales].[ProductType] AS [ProductType], 
-[vwSales].[StoreName] AS [StoreName], 
-[vwSales].[Latitude] AS [Latitude], 
-[vwSales].[Longitude] AS [Longitude], 
-[vwSales].[LastUpdated] AS [LastUpdated]
-FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
+[vwProductsWithStorePrice].[SaleId] AS [SaleId], 
+[vwProductsWithStorePrice].[StoreID] AS [StoreID], 
+[vwProductsWithStorePrice].[ProductId] AS [ProductId], 
+[vwProductsWithStorePrice].[ProductTypeId] AS [ProductTypeId], 
+[vwProductsWithStorePrice].[ProductParentTypeId] AS [ProductParentTypeId], 
+[vwProductsWithStorePrice].[UPC] AS [UPC], 
+[vwProductsWithStorePrice].[ProductName] AS [ProductName], 
+[vwProductsWithStorePrice].[Price] AS [Price], 
+[vwProductsWithStorePrice].[ABV] AS [ABV], 
+[vwProductsWithStorePrice].[Type] AS [Type], 
+[vwProductsWithStorePrice].[ProductType] AS [ProductType], 
+[vwProductsWithStorePrice].[Volume] AS [Volume], 
+[vwProductsWithStorePrice].[VolumeUnit] AS [VolumeUnit], 
+[vwProductsWithStorePrice].[ContainerType] AS [ContainerType], 
+[vwProductsWithStorePrice].[StoreName] AS [StoreName], 
+[vwProductsWithStorePrice].[Latitude] AS [Latitude], 
+[vwProductsWithStorePrice].[Longitude] AS [Longitude], 
+[vwProductsWithStorePrice].[LastUpdated] AS [LastUpdated], 
+[vwProductsWithStorePrice].[Rating1] AS [Rating1], 
+[vwProductsWithStorePrice].[Rating2] AS [Rating2], 
+[vwProductsWithStorePrice].[Rating3] AS [Rating3], 
+[vwProductsWithStorePrice].[Rating4] AS [Rating4], 
+[vwProductsWithStorePrice].[Rating5] AS [Rating5], 
+[vwProductsWithStorePrice].[CombinedRating] AS [CombinedRating]
+FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQuery>
           </EntitySet>
+          <AssociationSet Name="FK_ProductRatings_Products" Association="Self.FK_ProductRatings_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="ProductRatings" EntitySet="ProductRatings" />
+          </AssociationSet>
           <AssociationSet Name="FK_Products_TypesDetail" Association="Self.FK_Products_TypesDetail">
             <End Role="TypesDetail" EntitySet="TypesDetail" />
             <End Role="Products" EntitySet="Products" />
           </AssociationSet>
           <AssociationSet Name="FK_SaleInfo_ProductInfo" Association="Self.FK_SaleInfo_ProductInfo">
             <End Role="Products" EntitySet="Products" />
-            <End Role="Sales" EntitySet="Sales" />
+            <End Role="ProductsPrice" EntitySet="ProductsPrice" />
           </AssociationSet>
           <AssociationSet Name="FK_SaleInfo_StoreInfo" Association="Self.FK_SaleInfo_StoreInfo">
             <End Role="Stores" EntitySet="Stores" />
-            <End Role="Sales" EntitySet="Sales" />
+            <End Role="ProductsPrice" EntitySet="ProductsPrice" />
           </AssociationSet>
           <AssociationSet Name="FK_TypesDetail_Types" Association="Self.FK_TypesDetail_Types">
             <End Role="Types" EntitySet="Types" />
             <End Role="TypesDetail" EntitySet="TypesDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProductRating_Products" Association="Self.FK_UserProductRating_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="UserProductRating" EntitySet="UserProductRating" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -196,25 +268,16 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="TypeId" Type="Int32" Nullable="false" />
           <Property Name="UPC" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Sales" Relationship="Self.FK_SaleInfo_ProductInfo" FromRole="Products" ToRole="Sales" />
           <Property Name="ABV" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Rating" Type="Int32" />
-          <NavigationProperty Name="TypesDetail" Relationship="BoozicModel.FK_Products_TypesDetail" FromRole="Product" ToRole="TypesDetail" />
-          <Property Name="SizeInfo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="Sale">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="StoreID" Type="Int32" Nullable="false" />
-          <Property Name="ProductId" Type="Int32" Nullable="false" />
-          <Property Name="LastUpdated" Type="DateTime" Precision="3" />
-          <Property Name="Price" Type="Decimal" Precision="18" Scale="0" />
-          <NavigationProperty Name="Product" Relationship="Self.FK_SaleInfo_ProductInfo" FromRole="Sales" ToRole="Products" />
-          <NavigationProperty Name="Store" Relationship="Self.FK_SaleInfo_StoreInfo" FromRole="Sales" ToRole="Stores" />
+          <Property Name="Volume" Type="Decimal" Precision="8" Scale="3" />
+          <Property Name="VolumeUnit" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ContainerType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProductRating" Relationship="BoozicModel.FK_ProductRatings_Products" FromRole="Product" ToRole="ProductRating" />
+          <NavigationProperty Name="ProductsPrices" Relationship="BoozicModel.FK_SaleInfo_ProductInfo1" FromRole="Product" ToRole="ProductsPrice" />
+          <NavigationProperty Name="UserProductRatings" Relationship="BoozicModel.FK_UserProductRating_Products" FromRole="Product" ToRole="UserProductRating" />
+          <Property Name="TypeDetailsId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="TypesDetail1" Relationship="BoozicModel.FK_Products_TypesDetail1" FromRole="Product" ToRole="TypesDetail" />
         </EntityType>
         <EntityType Name="Store">
           <Key>
@@ -224,7 +287,7 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           <Property Name="StoreName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Latitude" Type="Decimal" Precision="18" Scale="6" />
           <Property Name="Longitude" Type="Decimal" Precision="18" Scale="6" />
-          <NavigationProperty Name="Sales" Relationship="Self.FK_SaleInfo_StoreInfo" FromRole="Stores" ToRole="Sales" />
+          <NavigationProperty Name="ProductsPrices" Relationship="BoozicModel.FK_SaleInfo_StoreInfo1" FromRole="Store" ToRole="ProductsPrice" />
         </EntityType>
         <EntityType Name="Type">
           <Key>
@@ -234,55 +297,41 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           <Property Name="Type1" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="TypesDetails" Relationship="BoozicModel.FK_TypesDetail_Types" FromRole="Type" ToRole="TypesDetail" />
         </EntityType>
-        <Association Name="FK_SaleInfo_ProductInfo">
-          <End Role="Products" Type="Self.Product" Multiplicity="1" />
-          <End Role="Sales" Type="Self.Sale" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Products">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Sales">
-              <PropertyRef Name="ProductId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SaleInfo_StoreInfo">
-          <End Role="Stores" Type="Self.Store" Multiplicity="1" />
-          <End Role="Sales" Type="Self.Sale" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Stores">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Sales">
-              <PropertyRef Name="StoreID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="BoozicEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Products" EntityType="Self.Product" />
-          <EntitySet Name="Sales" EntityType="Self.Sale" />
           <EntitySet Name="Stores" EntityType="Self.Store" />
           <EntitySet Name="Types" EntityType="Self.Type" />
-          <AssociationSet Name="FK_SaleInfo_ProductInfo" Association="Self.FK_SaleInfo_ProductInfo">
-            <End Role="Products" EntitySet="Products" />
-            <End Role="Sales" EntitySet="Sales" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SaleInfo_StoreInfo" Association="Self.FK_SaleInfo_StoreInfo">
-            <End Role="Stores" EntitySet="Stores" />
-            <End Role="Sales" EntitySet="Sales" />
-          </AssociationSet>
           <EntitySet Name="Settings" EntityType="BoozicModel.Setting" />
           <EntitySet Name="TypesDetails" EntityType="BoozicModel.TypesDetail" />
-          <AssociationSet Name="FK_Products_TypesDetail" Association="BoozicModel.FK_Products_TypesDetail">
-            <End Role="TypesDetail" EntitySet="TypesDetails" />
-            <End Role="Product" EntitySet="Products" />
-          </AssociationSet>
           <AssociationSet Name="FK_TypesDetail_Types" Association="BoozicModel.FK_TypesDetail_Types">
             <End Role="Type" EntitySet="Types" />
             <End Role="TypesDetail" EntitySet="TypesDetails" />
           </AssociationSet>
-          <EntitySet Name="vwSales" EntityType="BoozicModel.vwSale" />
           <EntitySet Name="GCMRegKeys" EntityType="BoozicModel.GCMRegKey" />
+          <EntitySet Name="ProductRatings" EntityType="BoozicModel.ProductRating" />
+          <EntitySet Name="ProductsPrices" EntityType="BoozicModel.ProductsPrice" />
+          <EntitySet Name="UserProductRatings" EntityType="BoozicModel.UserProductRating" />
+          <AssociationSet Name="FK_ProductRatings_Products" Association="BoozicModel.FK_ProductRatings_Products">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="ProductRating" EntitySet="ProductRatings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SaleInfo_ProductInfo1" Association="BoozicModel.FK_SaleInfo_ProductInfo1">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="ProductsPrice" EntitySet="ProductsPrices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProductRating_Products" Association="BoozicModel.FK_UserProductRating_Products">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="UserProductRating" EntitySet="UserProductRatings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SaleInfo_StoreInfo1" Association="BoozicModel.FK_SaleInfo_StoreInfo1">
+            <End Role="Store" EntitySet="Stores" />
+            <End Role="ProductsPrice" EntitySet="ProductsPrices" />
+          </AssociationSet>
+          <EntitySet Name="vwProductsWithStorePrices" EntityType="BoozicModel.vwProductsWithStorePrice" />
+          <AssociationSet Name="FK_Products_TypesDetail1" Association="BoozicModel.FK_Products_TypesDetail1">
+            <End Role="TypesDetail" EntitySet="TypesDetails" />
+            <End Role="Product" EntitySet="Products" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Setting">
           <Key>
@@ -299,21 +348,9 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ParentId" Type="Int32" Nullable="false" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Products" Relationship="BoozicModel.FK_Products_TypesDetail" FromRole="TypesDetail" ToRole="Product" />
           <NavigationProperty Name="Type" Relationship="BoozicModel.FK_TypesDetail_Types" FromRole="TypesDetail" ToRole="Type" />
+          <NavigationProperty Name="Products1" Relationship="BoozicModel.FK_Products_TypesDetail1" FromRole="TypesDetail" ToRole="Product" />
         </EntityType>
-        <Association Name="FK_Products_TypesDetail">
-          <End Type="BoozicModel.TypesDetail" Role="TypesDetail" Multiplicity="1" />
-          <End Type="BoozicModel.Product" Role="Product" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="TypesDetail">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Product">
-              <PropertyRef Name="TypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_TypesDetail_Types">
           <End Type="BoozicModel.Type" Role="Type" Multiplicity="1" />
           <End Type="BoozicModel.TypesDetail" Role="TypesDetail" Multiplicity="*" />
@@ -326,7 +363,99 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="vwSale">
+        <EntityType Name="GCMRegKey">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DeviceId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RegisterdOn" Type="DateTime" Precision="3" />
+          <Property Name="RegistrationToken" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ProductRating">
+          <Key>
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="ProductId" Type="Int32" Nullable="false" />
+          <Property Name="Rating1" Type="Int32" />
+          <Property Name="Rating2" Type="Int32" />
+          <Property Name="Rating3" Type="Int32" />
+          <Property Name="Rating4" Type="Int32" />
+          <Property Name="Rating5" Type="Int32" />
+          <NavigationProperty Name="Product" Relationship="BoozicModel.FK_ProductRatings_Products" FromRole="ProductRating" ToRole="Product" />
+          <Property Name="CombinedRating" Type="Decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="ProductsPrice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StoreID" Type="Int32" Nullable="false" />
+          <Property Name="ProductId" Type="Int32" Nullable="false" />
+          <Property Name="LastUpdated" Type="DateTime" Precision="3" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="3" />
+          <NavigationProperty Name="Product" Relationship="BoozicModel.FK_SaleInfo_ProductInfo1" FromRole="ProductsPrice" ToRole="Product" />
+          <NavigationProperty Name="Store" Relationship="BoozicModel.FK_SaleInfo_StoreInfo1" FromRole="ProductsPrice" ToRole="Store" />
+        </EntityType>
+        <EntityType Name="UserProductRating">
+          <Key>
+            <PropertyRef Name="DeviceId" />
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="DeviceId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="Int32" />
+          <Property Name="ProductId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Product" Relationship="BoozicModel.FK_UserProductRating_Products" FromRole="UserProductRating" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_ProductRatings_Products">
+          <End Type="BoozicModel.Product" Role="Product" Multiplicity="1" />
+          <End Type="BoozicModel.ProductRating" Role="ProductRating" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProductRating">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SaleInfo_ProductInfo1">
+          <End Type="BoozicModel.Product" Role="Product" Multiplicity="1" />
+          <End Type="BoozicModel.ProductsPrice" Role="ProductsPrice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProductsPrice">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserProductRating_Products">
+          <End Type="BoozicModel.Product" Role="Product" Multiplicity="1" />
+          <End Type="BoozicModel.UserProductRating" Role="UserProductRating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProductRating">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SaleInfo_StoreInfo1">
+          <End Type="BoozicModel.Store" Role="Store" Multiplicity="1" />
+          <End Type="BoozicModel.ProductsPrice" Role="ProductsPrice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Store">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProductsPrice">
+              <PropertyRef Name="StoreID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="vwProductsWithStorePrice">
           <Key>
             <PropertyRef Name="SaleId" />
             <PropertyRef Name="StoreID" />
@@ -338,26 +467,37 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           <Property Name="ProductTypeId" Type="Int32" />
           <Property Name="ProductParentTypeId" Type="Int32" />
           <Property Name="UPC" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Price" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="3" />
           <Property Name="ABV" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Rating" Type="Int32" />
           <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="ProductType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Volume" Type="Decimal" Precision="8" Scale="3" />
+          <Property Name="VolumeUnit" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ContainerType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="StoreName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Latitude" Type="Decimal" Precision="18" Scale="6" />
           <Property Name="Longitude" Type="Decimal" Precision="18" Scale="6" />
           <Property Name="LastUpdated" Type="DateTime" Precision="3" />
+          <Property Name="Rating1" Type="Int32" />
+          <Property Name="Rating2" Type="Int32" />
+          <Property Name="Rating3" Type="Int32" />
+          <Property Name="Rating4" Type="Int32" />
+          <Property Name="Rating5" Type="Int32" />
+          <Property Name="ProductName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CombinedRating" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
-        <EntityType Name="GCMRegKey">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="DeviceId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="RegisterdOn" Type="DateTime" Precision="3" />
-          <Property Name="RegistrationToken" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-        </EntityType>
+        <Association Name="FK_Products_TypesDetail1">
+          <End Type="BoozicModel.TypesDetail" Role="TypesDetail" Multiplicity="1" />
+          <End Type="BoozicModel.Product" Role="Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TypesDetail">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="TypeDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -367,24 +507,14 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="BoozicModel.Product">
               <MappingFragment StoreEntitySet="Products">
-                <ScalarProperty Name="SizeInfo" ColumnName="SizeInfo" />
-                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="TypeDetailsId" ColumnName="TypeDetailsId" />
+                <ScalarProperty Name="ContainerType" ColumnName="ContainerType" />
+                <ScalarProperty Name="VolumeUnit" ColumnName="VolumeUnit" />
+                <ScalarProperty Name="Volume" ColumnName="Volume" />
                 <ScalarProperty Name="ABV" ColumnName="ABV" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
                 <ScalarProperty Name="UPC" ColumnName="UPC" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Sales">
-            <EntityTypeMapping TypeName="BoozicModel.Sale">
-              <MappingFragment StoreEntitySet="Sales">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="StoreID" ColumnName="StoreID" />
-                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
-                <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -424,28 +554,6 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="vwSales">
-            <EntityTypeMapping TypeName="BoozicModel.vwSale">
-              <MappingFragment StoreEntitySet="vwSales">
-                <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
-                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
-                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
-                <ScalarProperty Name="StoreName" ColumnName="StoreName" />
-                <ScalarProperty Name="ProductType" ColumnName="ProductType" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Rating" ColumnName="Rating" />
-                <ScalarProperty Name="ABV" ColumnName="ABV" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="UPC" ColumnName="UPC" />
-                <ScalarProperty Name="ProductParentTypeId" ColumnName="ProductParentTypeId" />
-                <ScalarProperty Name="ProductTypeId" ColumnName="ProductTypeId" />
-                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
-                <ScalarProperty Name="StoreID" ColumnName="StoreID" />
-                <ScalarProperty Name="SaleId" ColumnName="SaleId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="GCMRegKeys">
             <EntityTypeMapping TypeName="BoozicModel.GCMRegKey">
               <MappingFragment StoreEntitySet="GCMRegKey">
@@ -453,6 +561,69 @@ FROM [dbo].[vwSales] AS [vwSales]</DefiningQuery>
                 <ScalarProperty Name="RegisterdOn" ColumnName="RegisterdOn" />
                 <ScalarProperty Name="DeviceId" ColumnName="DeviceId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductRatings">
+            <EntityTypeMapping TypeName="BoozicModel.ProductRating">
+              <MappingFragment StoreEntitySet="ProductRatings">
+                <ScalarProperty Name="CombinedRating" ColumnName="CombinedRating" />
+                <ScalarProperty Name="Rating5" ColumnName="Rating5" />
+                <ScalarProperty Name="Rating4" ColumnName="Rating4" />
+                <ScalarProperty Name="Rating3" ColumnName="Rating3" />
+                <ScalarProperty Name="Rating2" ColumnName="Rating2" />
+                <ScalarProperty Name="Rating1" ColumnName="Rating1" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductsPrices">
+            <EntityTypeMapping TypeName="BoozicModel.ProductsPrice">
+              <MappingFragment StoreEntitySet="ProductsPrice">
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="StoreID" ColumnName="StoreID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserProductRatings">
+            <EntityTypeMapping TypeName="BoozicModel.UserProductRating">
+              <MappingFragment StoreEntitySet="UserProductRating">
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="DeviceId" ColumnName="DeviceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwProductsWithStorePrices">
+            <EntityTypeMapping TypeName="BoozicModel.vwProductsWithStorePrice">
+              <MappingFragment StoreEntitySet="vwProductsWithStorePrice">
+                <ScalarProperty Name="CombinedRating" ColumnName="CombinedRating" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="Rating5" ColumnName="Rating5" />
+                <ScalarProperty Name="Rating4" ColumnName="Rating4" />
+                <ScalarProperty Name="Rating3" ColumnName="Rating3" />
+                <ScalarProperty Name="Rating2" ColumnName="Rating2" />
+                <ScalarProperty Name="Rating1" ColumnName="Rating1" />
+                <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="StoreName" ColumnName="StoreName" />
+                <ScalarProperty Name="ContainerType" ColumnName="ContainerType" />
+                <ScalarProperty Name="VolumeUnit" ColumnName="VolumeUnit" />
+                <ScalarProperty Name="Volume" ColumnName="Volume" />
+                <ScalarProperty Name="ProductType" ColumnName="ProductType" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="ABV" ColumnName="ABV" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="UPC" ColumnName="UPC" />
+                <ScalarProperty Name="ProductParentTypeId" ColumnName="ProductParentTypeId" />
+                <ScalarProperty Name="ProductTypeId" ColumnName="ProductTypeId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="StoreID" ColumnName="StoreID" />
+                <ScalarProperty Name="SaleId" ColumnName="SaleId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

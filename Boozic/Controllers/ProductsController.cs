@@ -61,8 +61,8 @@ namespace Boozic.Controllers
             {
                 //0085976033931
                 //5410316442930
-              p=  productService.GetByUPC(UPC);
-              if (p.UPC == null)
+            //  p=  productService.GetByUPC(UPC);
+           //   if (p.IsFoundInDatabase==false)
               {
                   p = productService.getProductUsingAPI(UPC);
                     
@@ -70,6 +70,17 @@ namespace Boozic.Controllers
             }
 
             return Ok(p);
+        }
+
+
+        public IHttpActionResult getProducts(decimal latitude, decimal longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 0, int LowestPrice = 0,
+                                    int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV=0, int HighestABV=100,
+                                    bool SortByProductType = false, bool SortByDistance = false, bool SortByPrice = true, bool SortByRating = false,
+                                    bool SortAscending = true)
+        {
+            //Add rating and ABV filter
+            List<vwProductsWithStorePrice> products = productService.filterProducts(0,0,ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice);
+            return Ok(products);
         }
     }
 }

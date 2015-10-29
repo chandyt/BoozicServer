@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using CookComputing.XmlRpc;
+using System.Text.RegularExpressions;
 
 namespace Boozic.Services
 {
@@ -65,29 +66,51 @@ namespace Boozic.Services
             // Validate UPC
             if (UPC.Length > 12 && UPC.StartsWith("0"))
                 UPC = UPC.Remove(0, 1);
-            if (UPC.Length > 12 && UPC.EndsWith("0"))
-                UPC = UPC.Remove(UPC.Length - 1, 1);
+            //if (UPC.Length > 12 && UPC.EndsWith("0"))
+            //    UPC = UPC.Remove(UPC.Length - 1, 1);
             // end Validate UPC
 
-            Models.ProductInfo p = new Models.ProductInfo();
+            
 
             _proxy = XmlRpcProxyGen.Create<IUPCDatabase>();
             XmlRpcStruct request = new XmlRpcStruct();
             XmlRpcStruct response = new XmlRpcStruct();
+           
+            Models.ProductInfo pi=new Models.ProductInfo();
 
             request.Add("rpc_key", UPCAPIKey);
             request.Add("upc", UPC);
 
             response = _proxy.Lookup(request);
 
-            p.UPC = UPC;
+
             if (response["status"].ToString() != "fail")
             {
-                p.ProductName = response["description"].ToString();
-                p.SizeInfo = response["size"].ToString();
+                string size = response["size"].ToString();
+
+                pi.ProductName = response["description"].ToString();
+                pi.Volume = Convert.ToDecimal(Regex.Replace(size, @"[^0-9\.]", string.Empty));
+                pi.VolumeUnit = size.Replace(pi.Volume.ToString(), string.Empty).Trim();
+                pi.UPC = UPC;
+                pi.ProductTypeId = 4;
+                pi.IsFoundInDatabase = false;
             }
-            p.IsFoundInDatabase = false;
-            return p;
+
+           
+            return pi;
         }
+
+       public void addProduct(Product aProduct)
+        {
+            repository.addProduct(aProduct);
+        }
+
+       public List<vwProductsWithStorePrice> filterProducts(decimal latitude, decimal longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 0, int LowestPrice = 0,
+                                     int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
+                                     bool SortByProductType = false, bool SortByDistance = false, bool SortByPrice = true, bool SortByRating = false,
+                                     bool SortAscending = true)
+       {
+           return repository.filterProducts(0,0,ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice);
+       }
     }
 }
