@@ -69,30 +69,33 @@ namespace Boozic.Services
                         si.IsOpenNow = hours["open_now"].Value<bool>();
 
                     // Generating parameters for Google Matrix API to find the distance and the duration
-                    NameValueCollection GM_Details = new NameValueCollection();
-                    GM_Details.Add("key", googleAPIKey);
-                    GM_Details.Add("origins", Latitude + "," + Longitude);
-                    GM_Details.Add("destinations", si.Latitude + "," + si.Longitude);
-                    GM_Details.Add("units", "imperial");
+                    //NameValueCollection GM_Details = new NameValueCollection();
+                    //GM_Details.Add("key", googleAPIKey);
+                    //GM_Details.Add("origins", Latitude + "," + Longitude);
+                    //GM_Details.Add("destinations", si.Latitude + "," + si.Longitude);
+                    //GM_Details.Add("units", "imperial");
 
-                    string GM_Url = "json?" + string.Join("&", GM_Details.AllKeys.Select(x => string.Format("{0}={1}", HttpUtility.UrlEncode(x), HttpUtility.UrlEncode(GM_Details[x]))));
+                    //string GM_Url = "json?" + string.Join("&", GM_Details.AllKeys.Select(x => string.Format("{0}={1}", HttpUtility.UrlEncode(x), HttpUtility.UrlEncode(GM_Details[x]))));
 
-                    HttpClient httpGMClient = new HttpClient();
-                    httpGMClient.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/distancematrix/");
-                    HttpResponseMessage GM_Response = httpGMClient.GetAsync(GM_Url).Result;
-                    if (GM_Response.IsSuccessStatusCode)
-                    {
-                        //Parsing out the distance and duration out of the JSON from Google Matrix API.
-                        string googleMatrixResult = GM_Response.Content.ReadAsStringAsync().Result.ToString();
+                    //HttpClient httpGMClient = new HttpClient();
+                    //httpGMClient.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/distancematrix/");
+                    //HttpResponseMessage GM_Response = httpGMClient.GetAsync(GM_Url).Result;
+                    //if (GM_Response.IsSuccessStatusCode)
+                    //{
+                    //    //Parsing out the distance and duration out of the JSON from Google Matrix API.
+                    //    string googleMatrixResult = GM_Response.Content.ReadAsStringAsync().Result.ToString();
 
-                        JObject GM_Json = Newtonsoft.Json.Linq.JObject.Parse(googleMatrixResult);
-                        JArray rows = (JArray)GM_Json["rows"];
-                        if (rows.Count > 0)
-                        {
-                            si.Distance = GM_Json["rows"][0]["elements"][0]["distance"]["value"].Value<double>();
-                            si.Duration = GM_Json["rows"][0]["elements"][0]["duration"]["value"].Value<double>();
-                        }
-                    }
+                    //    JObject GM_Json = Newtonsoft.Json.Linq.JObject.Parse(googleMatrixResult);
+                    //    JArray rows = (JArray)GM_Json["rows"];
+                    //    if (rows.Count > 0)
+                    //    {
+                    //        si.Distance = GM_Json["rows"][0]["elements"][0]["distance"]["value"].Value<double>();
+                    //        si.Duration = GM_Json["rows"][0]["elements"][0]["duration"]["value"].Value<double>();
+                    //    }
+                    //}
+                    Dictionary<String, Double> distanceResult = getDistanceAndTime(Latitude, Longitude, si.Latitude, si.Longitude);
+                    si.Distance = distanceResult["Distance"];
+                    si.Duration = distanceResult["Duration"];
 
                     lstSI.Add(si);
                 }
@@ -102,6 +105,47 @@ namespace Boozic.Services
             }
 
             return lstSI;
+        }
+
+        public Dictionary<string, Double> getDistanceAndTime(double sourceLatitude,double sourceLongitude,double destLatitude,double destLongitude)
+        {
+            // Generating parameters for Google Matrix API to find the distance and the duration
+            String googleAPIKey = appSettingsService.GetGoogleAPIKey();
+            NameValueCollection GM_Details = new NameValueCollection();
+            GM_Details.Add("key", googleAPIKey);
+            GM_Details.Add("origins", sourceLatitude + "," + sourceLongitude);
+            GM_Details.Add("destinations", destLatitude + "," + destLongitude);
+            GM_Details.Add("units", "imperial");
+
+            string GM_Url = "json?" + string.Join("&", GM_Details.AllKeys.Select(x => string.Format("{0}={1}", HttpUtility.UrlEncode(x), HttpUtility.UrlEncode(GM_Details[x]))));
+
+            HttpClient httpGMClient = new HttpClient();
+            httpGMClient.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/distancematrix/");
+            HttpResponseMessage GM_Response = httpGMClient.GetAsync(GM_Url).Result;
+            Dictionary<String, Double> Result= new Dictionary<String, Double>();
+            if (GM_Response.IsSuccessStatusCode)
+            {
+                //Parsing out the distance and duration out of the JSON from Google Matrix API.
+                string googleMatrixResult = GM_Response.Content.ReadAsStringAsync().Result.ToString();
+
+                JObject GM_Json = Newtonsoft.Json.Linq.JObject.Parse(googleMatrixResult);
+                JArray rows = (JArray)GM_Json["rows"];
+                if (rows.Count > 0)
+                {
+                    try
+                    {
+
+                        Result.Add("Distance", GM_Json["rows"][0]["elements"][0]["distance"]["value"].Value<double>() * 0.000621371);
+                        Result.Add("Duration", GM_Json["rows"][0]["elements"][0]["duration"]["value"].Value<double>());
+                    }
+                    catch (Exception ex)
+                    {
+                        Result.Add("Distance", 9999);
+                        Result.Add("Duration", 9999);
+                    }
+                }
+            }
+            return Result;
         }
     }
 }

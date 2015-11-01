@@ -94,11 +94,11 @@
 warning 6002: The table/view 'Boozic.dbo.vwProductsWithStorePrice' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vwProductsWithStorePrice">
           <Key>
-            <PropertyRef Name="SaleId" />
+            <PropertyRef Name="PriceID" />
             <PropertyRef Name="StoreID" />
             <PropertyRef Name="ProductId" />
           </Key>
-          <Property Name="SaleId" Type="int" Nullable="false" />
+          <Property Name="PriceID" Type="int" Nullable="false" />
           <Property Name="StoreID" Type="int" Nullable="false" />
           <Property Name="ProductId" Type="int" Nullable="false" />
           <Property Name="ProductTypeId" Type="int" />
@@ -122,6 +122,7 @@ warning 6002: The table/view 'Boozic.dbo.vwProductsWithStorePrice' does not have
           <Property Name="Rating4" Type="int" />
           <Property Name="Rating5" Type="int" />
           <Property Name="CombinedRating" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="DistanceFromCurrentLocation" Type="decimal" Precision="18" Scale="6" />
         </EntityType>
         <Association Name="FK_ProductRatings_Products">
           <End Role="Products" Type="Self.Products" Multiplicity="1" />
@@ -207,7 +208,7 @@ warning 6002: The table/view 'Boozic.dbo.vwProductsWithStorePrice' does not have
           <EntitySet Name="UserProductRating" EntityType="Self.UserProductRating" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="vwProductsWithStorePrice" EntityType="Self.vwProductsWithStorePrice" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
-[vwProductsWithStorePrice].[SaleId] AS [SaleId], 
+[vwProductsWithStorePrice].[PriceID] AS [PriceID], 
 [vwProductsWithStorePrice].[StoreID] AS [StoreID], 
 [vwProductsWithStorePrice].[ProductId] AS [ProductId], 
 [vwProductsWithStorePrice].[ProductTypeId] AS [ProductTypeId], 
@@ -230,7 +231,8 @@ warning 6002: The table/view 'Boozic.dbo.vwProductsWithStorePrice' does not have
 [vwProductsWithStorePrice].[Rating3] AS [Rating3], 
 [vwProductsWithStorePrice].[Rating4] AS [Rating4], 
 [vwProductsWithStorePrice].[Rating5] AS [Rating5], 
-[vwProductsWithStorePrice].[CombinedRating] AS [CombinedRating]
+[vwProductsWithStorePrice].[CombinedRating] AS [CombinedRating], 
+[vwProductsWithStorePrice].[DistanceFromCurrentLocation] AS [DistanceFromCurrentLocation]
 FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_ProductRatings_Products" Association="Self.FK_ProductRatings_Products">
@@ -457,11 +459,10 @@ FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQue
         </Association>
         <EntityType Name="vwProductsWithStorePrice">
           <Key>
-            <PropertyRef Name="SaleId" />
             <PropertyRef Name="StoreID" />
             <PropertyRef Name="ProductId" />
+            <PropertyRef Name="PriceID" />
           </Key>
-          <Property Name="SaleId" Type="Int32" Nullable="false" />
           <Property Name="StoreID" Type="Int32" Nullable="false" />
           <Property Name="ProductId" Type="Int32" Nullable="false" />
           <Property Name="ProductTypeId" Type="Int32" />
@@ -485,6 +486,8 @@ FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQue
           <Property Name="Rating5" Type="Int32" />
           <Property Name="ProductName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="CombinedRating" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="DistanceFromCurrentLocation" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="PriceID" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_Products_TypesDetail1">
           <End Type="BoozicModel.TypesDetail" Role="TypesDetail" Multiplicity="1" />
@@ -600,6 +603,8 @@ FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQue
           <EntitySetMapping Name="vwProductsWithStorePrices">
             <EntityTypeMapping TypeName="BoozicModel.vwProductsWithStorePrice">
               <MappingFragment StoreEntitySet="vwProductsWithStorePrice">
+                <ScalarProperty Name="PriceID" ColumnName="PriceID" />
+                <ScalarProperty Name="DistanceFromCurrentLocation" ColumnName="DistanceFromCurrentLocation" />
                 <ScalarProperty Name="CombinedRating" ColumnName="CombinedRating" />
                 <ScalarProperty Name="ProductName" ColumnName="ProductName" />
                 <ScalarProperty Name="Rating5" ColumnName="Rating5" />
@@ -623,7 +628,6 @@ FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQue
                 <ScalarProperty Name="ProductTypeId" ColumnName="ProductTypeId" />
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
                 <ScalarProperty Name="StoreID" ColumnName="StoreID" />
-                <ScalarProperty Name="SaleId" ColumnName="SaleId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

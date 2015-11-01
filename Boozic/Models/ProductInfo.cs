@@ -12,6 +12,9 @@ namespace Boozic.Models
     public class ProductInfo : vwProductsWithStorePrice
     {
 
+        public ProductInfo()
+        { }
+
         //int productId;
         //string productName;
         //int productTypeId;
@@ -20,8 +23,9 @@ namespace Boozic.Models
         //string upc;
         //string volumeUnit;
         //double volume;
-        bool isFoundInDatabase;
-        decimal distanceCalcualted;
+        bool isFoundInDatabase=true;
+        decimal distanceCalcualted=0;
+
         
         //[JsonProperty(PropertyName = "ProductID")]
         //public int ProductId
@@ -87,7 +91,7 @@ namespace Boozic.Models
             set { isFoundInDatabase = value; }
         }
 
-        [JsonProperty(PropertyName = "DistanceCalculated")]
+        [JsonProperty(PropertyName = "DistanceCalculatedInMiles")]
         public decimal DistanceCalculated
         {
             get { return distanceCalcualted; }

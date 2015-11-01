@@ -14,7 +14,6 @@ namespace Boozic
     
     public partial class vwProductsWithStorePrice
     {
-        public int SaleId { get; set; }
         public int StoreID { get; set; }
         public int ProductId { get; set; }
         public Nullable<int> ProductTypeId { get; set; }
@@ -38,5 +37,7 @@ namespace Boozic
         public Nullable<int> Rating5 { get; set; }
         public string ProductName { get; set; }
         public Nullable<decimal> CombinedRating { get; set; }
+        public Nullable<decimal> DistanceFromCurrentLocation { get; set; }
+        public int PriceID { get; set; }
     }
 }

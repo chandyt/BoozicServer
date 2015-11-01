@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using Boozic.Services;
 
 namespace Boozic.Repositories
 {
@@ -57,92 +58,119 @@ namespace Boozic.Repositories
 
         }
 
-        public List<Models.ProductInfo> filterProducts(decimal latitude, decimal longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 0, int LowestPrice = 0,
+        public List<vwProductsWithStorePrice> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
                                 int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
                                 bool SortByProductType = false, bool SortByDistance = false, bool SortByPrice = true, bool SortByRating = false,
                                 bool SortAscending = true)
             {
-                List<vwProductsWithStorePrice> Sales = sdContext.vwProductsWithStorePrices.ToList();
+
+                List<vwProductsWithStorePrice> lstProducts = sdContext.vwProductsWithStorePrices.ToList();
+                lstProducts = lstProducts.OrderBy(o => o.StoreID).ToList();
+             
+                //calculating distance and filtering by radius
+                int currentStoreId = 0;
+                double DistanceFromCurrentLocation = 0;
+                LocationService lc = new LocationService();
+                foreach (vwProductsWithStorePrice p in lstProducts)
+                {
+                    p.DistanceFromCurrentLocation = 0;
+                    if (p.StoreID != currentStoreId)
+                    {
+                        DistanceFromCurrentLocation=lc.getDistanceAndTime(latitude, longitude, (double)p.Latitude, (double)p.Longitude)["Distance"];
+                        currentStoreId = p.StoreID;
+                    }
+                    p.DistanceFromCurrentLocation =(decimal) DistanceFromCurrentLocation;
+                }
+                
+                //Default Radius =2 Miles
+                lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.DistanceFromCurrentLocation <= Radius; });
+
                 if (ProductTypeId > 0)
                 {
-                    Sales = Sales.FindAll(s => s.ProductId.Equals(ProductTypeId));
+                    lstProducts = lstProducts.FindAll(s => s.ProductId.Equals(ProductTypeId));
                 }
                 if (ProductParentTypeId > 0)
                 {
-                    Sales = Sales.FindAll(s => s.ProductParentTypeId.Equals(ProductParentTypeId));
+                    lstProducts = lstProducts.FindAll(s => s.ProductParentTypeId.Equals(ProductParentTypeId));
                 }
-                if (LowestPrice >=0)
+                if (LowestPrice >= 0)
                 {
-                    Sales = Sales.FindAll(delegate(vwProductsWithStorePrice s) { return s.Price >= LowestPrice; });
-                }
-
-                if (HighestPrice < 9999999)
-                {
-                    Sales = Sales.FindAll(delegate(vwProductsWithStorePrice s) { return s.Price <= HighestPrice; });
+                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.Price >= LowestPrice; });
                 }
 
-                if (LowestRating >=0)
+                if (HighestPrice <= 9999999)
                 {
-                    Sales = Sales.FindAll(delegate(vwProductsWithStorePrice s) { return s.CombinedRating >= LowestRating; });
+                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.Price <= HighestPrice; });
                 }
-                if (HighestRating <=5)
+
+                if (LowestRating >= 0)
                 {
-                    Sales = Sales.FindAll(delegate(vwProductsWithStorePrice s) { return s.CombinedRating <= HighestRating; });
+                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.CombinedRating >= LowestRating; });
+                }
+                if (HighestRating <= 5)
+                {
+                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.CombinedRating <= HighestRating; });
                 }
 
                 if (LowestABV >= 0)
                 {
-                    Sales = Sales.FindAll(delegate(vwProductsWithStorePrice s) { return s.ABV >= LowestABV; });
+                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.ABV >= LowestABV; });
                 }
                 if (LowestABV <= 5)
                 {
-                    Sales = Sales.FindAll(delegate(vwProductsWithStorePrice s) { return s.ABV <= HighestABV; });
+                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.ABV <= HighestABV; });
                 }
 
-                if (SortByProductType )
-                 {
-                     Sales = Sales.OrderBy(o => o.ProductType).ToList();
-                 }
+                if (SortByProductType)
+                {
+                    lstProducts = lstProducts.OrderBy(o => o.ProductType).ToList();
+                }
 
                 if (SortByProductType)
                 {
                     if (SortAscending)
-                        Sales = Sales.OrderBy(o => o.ProductType).ToList();
+                        lstProducts = lstProducts.OrderBy(o => o.ProductType).ToList();
                     else
-                        Sales = Sales.OrderByDescending(o => o.ProductType).ToList();
+                        lstProducts = lstProducts.OrderByDescending(o => o.ProductType).ToList();
                 }
 
                 if (SortByDistance)
                 {
-                    //if (SortAscending)
-                        //Sales = Sales.OrderBy(o => o.ProductType).ToList();
-                    //else
-                       // Sales = Sales.OrderByDescending(o => o.ProductType).ToList();
+                    if (SortAscending)
+                        lstProducts = lstProducts.OrderBy(o => o.ProductType).ToList();
+                    else
+                        lstProducts = lstProducts.OrderByDescending(o => o.ProductType).ToList();
                 }
 
                 if (SortByPrice)
                 {
                     if (SortAscending)
-                        Sales = Sales.OrderBy(o => o.Price).ToList();
+                        lstProducts = lstProducts.OrderBy(o => o.Price).ToList();
                     else
-                        Sales = Sales.OrderByDescending(o => o.Price).ToList();
+                        lstProducts = lstProducts.OrderByDescending(o => o.Price).ToList();
                 }
 
                 if (SortByRating)
                 {
                     if (SortAscending)
-                        Sales = Sales.OrderBy(o => o.CombinedRating).ToList();
+                        lstProducts = lstProducts.OrderBy(o => o.CombinedRating).ToList();
                     else
-                        Sales = Sales.OrderByDescending(o => o.CombinedRating).ToList();
+                        lstProducts = lstProducts.OrderByDescending(o => o.CombinedRating).ToList();
                 }
 
-              
-                //TODO: Calculate for radius Change the output to product info
-                return Sales;
+                if (SortByDistance)
+                {
+                    if (SortAscending)
+                        lstProducts = lstProducts.OrderBy(o => o.DistanceFromCurrentLocation).ToList();
+                    else
+                        lstProducts = lstProducts.OrderByDescending(o => o.DistanceFromCurrentLocation).ToList();
+                }
+
+                return lstProducts;
             }
 
 
-
+        
 
     }
 }

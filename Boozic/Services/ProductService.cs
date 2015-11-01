@@ -105,12 +105,13 @@ namespace Boozic.Services
             repository.addProduct(aProduct);
         }
 
-       public List<Models.ProductInfo> filterProducts(decimal latitude, decimal longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 0, int LowestPrice = 0,
+       public List<vwProductsWithStorePrice> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
                                      int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
                                      bool SortByProductType = false, bool SortByDistance = false, bool SortByPrice = true, bool SortByRating = false,
                                      bool SortAscending = true)
        {
-           return repository.filterProducts(0,0,ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice);
+           return repository.filterProducts(latitude, longitude, ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice,
+                          LowestRating, HighestRating, LowestABV, HighestABV, SortByProductType, SortByDistance, SortByPrice, SortByRating, SortAscending);
        }
     }
 }
