@@ -25,7 +25,8 @@ namespace Boozic.Models
         //double volume;
         bool isFoundInDatabase=true;
         decimal distanceCalcualted=0;
-
+        StoreInfo cheapestStore;
+        StoreInfo closestStore;
         
         //[JsonProperty(PropertyName = "ProductID")]
         //public int ProductId
@@ -96,6 +97,20 @@ namespace Boozic.Models
         {
             get { return distanceCalcualted; }
             set { distanceCalcualted = value; }
+        }
+
+        [JsonProperty(PropertyName = "CheapestStore")]
+        public StoreInfo CheapestStore
+        {
+            get { return cheapestStore; }
+            set { cheapestStore = value; }
+        }
+
+        [JsonProperty(PropertyName = "ClosestStore")]
+        public StoreInfo ClosestStore
+        {
+            get { return closestStore; }
+            set { closestStore = value; }
         }
 
     }

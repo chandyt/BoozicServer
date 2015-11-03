@@ -132,18 +132,22 @@
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\IProductsRepository.cs" />
     <Compile Include="Repositories\ISettingsRepository.cs" />
+    <Compile Include="Repositories\IStoreRepository.cs" />
     <Compile Include="Repositories\LocationServiceRepository.cs" />
     <Compile Include="Repositories\ILocationServiceRepository.cs" />
     <Compile Include="Repositories\ProductsRepository.cs" />
     <Compile Include="Repositories\SettingsRepository.cs" />
+    <Compile Include="Repositories\StoreRepository.cs" />
     <Compile Include="Services\GCMService.cs" />
     <Compile Include="Services\IGCMService.cs" />
     <Compile Include="Services\ILocationService.cs" />
     <Compile Include="Services\IProductService.cs" />
     <Compile Include="Services\ISettingsService.cs" />
+    <Compile Include="Services\IStoreService.cs" />
     <Compile Include="Services\LocationService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\SettingsService.cs" />
+    <Compile Include="Services\StoreService.cs" />
     <Compile Include="Setting.cs">
       <DependentUpon>Boozic.tt</DependentUpon>
     </Compile>
@@ -154,6 +158,9 @@
       <DependentUpon>Boozic.tt</DependentUpon>
     </Compile>
     <Compile Include="TypesDetail.cs">
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserFavourite.cs">
       <DependentUpon>Boozic.tt</DependentUpon>
     </Compile>
     <Compile Include="UserProductRating.cs">

@@ -61,8 +61,8 @@ namespace Boozic.Controllers
             {
                 //0085976033931
                 //5410316442930
-            //  p=  productService.GetByUPC(UPC);
-           //   if (p.IsFoundInDatabase==false)
+              p=  productService.GetByUPC(UPC);
+              if (p.IsFoundInDatabase==false)
               {
                   p = productService.getProductUsingAPI(UPC);
                     
@@ -75,11 +75,17 @@ namespace Boozic.Controllers
         [HttpGet]
         public IHttpActionResult getProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
                                     int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV=0, int HighestABV=100,
-                                    bool SortByProductType = false, bool SortByDistance = false, bool SortByPrice = true, bool SortByRating = false,
-                                    bool SortAscending = true)
+                                    int SortOption=0)
         {
-            List<vwProductsWithStorePrice> products = productService.filterProducts(latitude, longitude, ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice, 
-                                      LowestRating,HighestRating ,LowestABV, HighestABV,SortByProductType , SortByDistance , SortByPrice , SortByRating, SortAscending );
+
+            // Product Paret type Id = 001, 010,011.....
+            // Search by UPC: search for stores in 10 mile and then qry the UPC in that stores
+            //Fav: Device Id and ProdId
+            //Change view to use products as master
+
+
+            List<Models.ProductInfo> products = productService.filterProducts(latitude, longitude, ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice,
+                                      LowestRating, HighestRating, LowestABV, HighestABV, SortOption);
             return Ok(products);
         }
     }

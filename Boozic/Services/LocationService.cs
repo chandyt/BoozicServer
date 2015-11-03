@@ -103,7 +103,7 @@ namespace Boozic.Services
 
 
             }
-
+            lstSI = lstSI.OrderBy(o => o.Distance).ToList();
             return lstSI;
         }
 

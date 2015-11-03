@@ -16,7 +16,7 @@ namespace Boozic
     {
         public int StoreID { get; set; }
         public int ProductId { get; set; }
-        public Nullable<int> ProductTypeId { get; set; }
+        public int ProductTypeId { get; set; }
         public Nullable<int> ProductParentTypeId { get; set; }
         public string UPC { get; set; }
         public Nullable<decimal> Price { get; set; }
@@ -37,7 +37,6 @@ namespace Boozic
         public Nullable<int> Rating5 { get; set; }
         public string ProductName { get; set; }
         public Nullable<decimal> CombinedRating { get; set; }
-        public Nullable<decimal> DistanceFromCurrentLocation { get; set; }
         public int PriceID { get; set; }
     }
 }

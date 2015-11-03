@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using Boozic.Services;
+using System.ComponentModel;
 
 namespace Boozic.Repositories
 {
@@ -58,119 +59,161 @@ namespace Boozic.Repositories
 
         }
 
-        public List<vwProductsWithStorePrice> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
+        public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
                                 int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
-                                bool SortByProductType = false, bool SortByDistance = false, bool SortByPrice = true, bool SortByRating = false,
-                                bool SortAscending = true)
+                                 int SortOption = 0)
             {
 
                 List<vwProductsWithStorePrice> lstProducts = sdContext.vwProductsWithStorePrices.ToList();
                 lstProducts = lstProducts.OrderBy(o => o.StoreID).ToList();
-             
+                List<Models.ProductInfo> lstProductInfo = new List<Models.ProductInfo>();
+
                 //calculating distance and filtering by radius
                 int currentStoreId = 0;
                 double DistanceFromCurrentLocation = 0;
-                LocationService lc = new LocationService();
+                LocationService ls = new LocationService();
+                StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
+
                 foreach (vwProductsWithStorePrice p in lstProducts)
                 {
-                    p.DistanceFromCurrentLocation = 0;
+                    Models.ProductInfo tmpProductInfo = new Models.ProductInfo();
+                    CopyProperties(tmpProductInfo, p);
                     if (p.StoreID != currentStoreId)
                     {
-                        DistanceFromCurrentLocation=lc.getDistanceAndTime(latitude, longitude, (double)p.Latitude, (double)p.Longitude)["Distance"];
+                        DistanceFromCurrentLocation=ls.getDistanceAndTime(latitude, longitude, (double)p.Latitude, (double)p.Longitude)["Distance"];
                         currentStoreId = p.StoreID;
                     }
-                    p.DistanceFromCurrentLocation =(decimal) DistanceFromCurrentLocation;
+                    
+                    lstProductInfo.Add(tmpProductInfo);
+                    tmpProductInfo.DistanceCalculated = (decimal)DistanceFromCurrentLocation;
                 }
-                
+
+                lstProductInfo = lstProductInfo.OrderBy(o => o.ProductId).ToList();
+                int currentProductID = 0;
+                for (int i = 0; i < lstProductInfo.Count; i++)
+                {
+                    if (lstProductInfo[i].ProductId != currentProductID)
+                    {
+                        Models.StoreInfo storeInfo = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
+                        //Store storeInfo = ss.GetById(lstProductInfo[i].StoreID);
+                        lstProductInfo.Where(x => x.ProductId == lstProductInfo[i].ProductId).ToList().ForEach(f => f.ClosestStore = storeInfo);
+                        //Models.StoreInfo CheapestStore = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
+                        //Store CheapestStore = ss.GetById(lstProductInfo[i].StoreID);
+                        lstProductInfo.Where(x => x.ProductId == lstProductInfo[i].ProductId).ToList().ForEach(f => f.CheapestStore = storeInfo);
+                        
+                        currentProductID = lstProductInfo[i].ProductId;
+                    }
+                    else
+                    {
+                       // Store storeInfo = ss.GetById(lstProductInfo[i].StoreID);
+                        Models.StoreInfo storeInfo = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
+                        if (lstProductInfo[i].DistanceCalculated < lstProductInfo[i - 1].DistanceCalculated)
+                        {
+                            // Models.StoreInfo ClosestStore = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
+
+                            lstProductInfo.Where(x => x.ProductId == lstProductInfo[i].ProductId).ToList().ForEach(f => f.ClosestStore = storeInfo);
+                           
+                        }
+
+                        if (lstProductInfo[i].Price < lstProductInfo[i - 1].Price)
+                        {
+                            //Models.StoreInfo CheapestStore = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
+                            //Store CheapestStore = ss.GetById(lstProductInfo[i].StoreID);
+                            lstProductInfo.Where(x => x.ProductId == lstProductInfo[i].ProductId).ToList().ForEach(f => f.CheapestStore = storeInfo);
+                        }
+                    }
+
+                }
+
+
+                lstProductInfo = lstProductInfo.GroupBy(x => x.ProductId).Select(g => g.First()).ToList();
                 //Default Radius =2 Miles
-                lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.DistanceFromCurrentLocation <= Radius; });
+                lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.DistanceCalculated <= Radius; });
+
+               
 
                 if (ProductTypeId > 0)
                 {
-                    lstProducts = lstProducts.FindAll(s => s.ProductId.Equals(ProductTypeId));
+                    lstProductInfo = lstProductInfo.FindAll(s => s.ProductId.Equals(ProductTypeId));
                 }
+
+                    
+
                 if (ProductParentTypeId > 0)
                 {
-                    lstProducts = lstProducts.FindAll(s => s.ProductParentTypeId.Equals(ProductParentTypeId));
+                    String prodFilter = Convert.ToString(ProductParentTypeId, 2).PadLeft(3,'0');
+                    int Wine = 1;
+                    int Beer = 2;
+                    int Liquors = 3;
+
+                    if (prodFilter.Substring(0, 1) == "0")
+                        Wine = 0;
+                    if (prodFilter.Substring(1, 1) == "0")
+                        Beer = 0;
+                    if (prodFilter.Substring(2, 1) == "0")
+                        Liquors = 0;
+                    lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.ProductParentTypeId == Wine || s.ProductParentTypeId == Beer || s.ProductParentTypeId == Liquors; });
+                    
                 }
                 if (LowestPrice >= 0)
                 {
-                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.Price >= LowestPrice; });
+                    lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.Price >= LowestPrice; });
                 }
 
                 if (HighestPrice <= 9999999)
                 {
-                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.Price <= HighestPrice; });
+                    lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.Price <= HighestPrice; });
                 }
 
                 if (LowestRating >= 0)
                 {
-                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.CombinedRating >= LowestRating; });
+                    lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CombinedRating >= LowestRating; });
                 }
                 if (HighestRating <= 5)
                 {
-                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.CombinedRating <= HighestRating; });
+                    lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CombinedRating <= HighestRating; });
                 }
 
                 if (LowestABV >= 0)
                 {
-                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.ABV >= LowestABV; });
+                    lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.ABV >= LowestABV; });
                 }
                 if (LowestABV <= 5)
                 {
-                    lstProducts = lstProducts.FindAll(delegate(vwProductsWithStorePrice s) { return s.ABV <= HighestABV; });
+                    lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.ABV <= HighestABV; });
                 }
 
-                if (SortByProductType)
+                if (SortOption > 0)
                 {
-                    lstProducts = lstProducts.OrderBy(o => o.ProductType).ToList();
-                }
+                    String prodSort = Convert.ToString(SortOption, 2).PadLeft(6, '0');
 
-                if (SortByProductType)
-                {
-                    if (SortAscending)
-                        lstProducts = lstProducts.OrderBy(o => o.ProductType).ToList();
-                    else
-                        lstProducts = lstProducts.OrderByDescending(o => o.ProductType).ToList();
+                    if (prodSort.Substring(0, 1) == "1")
+                            lstProductInfo = lstProductInfo.OrderBy(o => o.Price).ToList();
+                    if (prodSort.Substring(1, 1) == "1")
+                            lstProductInfo = lstProductInfo.OrderByDescending(o => o.Price).ToList();
+                    
+                    if (prodSort.Substring(2, 1) == "1")
+                        lstProductInfo = lstProductInfo.OrderBy(o => o.ABV).ToList();
+                    if (prodSort.Substring(3, 1) == "1")
+                        lstProductInfo = lstProductInfo.OrderByDescending(o => o.ABV).ToList();
+                    
+                    if (prodSort.Substring(4, 1) == "1")
+                        lstProductInfo = lstProductInfo.OrderBy(o => o.CombinedRating).ToList();
+                    if (prodSort.Substring(5, 1) == "1")
+                        lstProductInfo = lstProductInfo.OrderByDescending(o => o.CombinedRating).ToList();
+                    
                 }
-
-                if (SortByDistance)
-                {
-                    if (SortAscending)
-                        lstProducts = lstProducts.OrderBy(o => o.ProductType).ToList();
-                    else
-                        lstProducts = lstProducts.OrderByDescending(o => o.ProductType).ToList();
-                }
-
-                if (SortByPrice)
-                {
-                    if (SortAscending)
-                        lstProducts = lstProducts.OrderBy(o => o.Price).ToList();
-                    else
-                        lstProducts = lstProducts.OrderByDescending(o => o.Price).ToList();
-                }
-
-                if (SortByRating)
-                {
-                    if (SortAscending)
-                        lstProducts = lstProducts.OrderBy(o => o.CombinedRating).ToList();
-                    else
-                        lstProducts = lstProducts.OrderByDescending(o => o.CombinedRating).ToList();
-                }
-
-                if (SortByDistance)
-                {
-                    if (SortAscending)
-                        lstProducts = lstProducts.OrderBy(o => o.DistanceFromCurrentLocation).ToList();
-                    else
-                        lstProducts = lstProducts.OrderByDescending(o => o.DistanceFromCurrentLocation).ToList();
-                }
-
-                return lstProducts;
+                return lstProductInfo;
             }
 
 
-        
+        static void CopyProperties(object dest, object src)
+        {
+            foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
+            {
+                item.SetValue(dest, item.GetValue(src));
+            }
+        }
 
     }
 }

@@ -37,6 +37,7 @@ namespace Boozic.Controllers
             StoreInfo SI=new StoreInfo();
             List<StoreInfo> lstSI = new List<StoreInfo>();
             lstSI = locationService.getStores(Latitude, Longitude, 0.2); // Radius is ~150 feet. to accomadate if the user in parking lots...
+            
             if (lstSI.Count > 0)
                 SI = lstSI[0];
 
