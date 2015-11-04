@@ -89,7 +89,7 @@ namespace Boozic.Services
                 string size = response["size"].ToString();
 
                 pi.ProductName = response["description"].ToString();
-                pi.Volume = Convert.ToDecimal(Regex.Replace(size, @"[^0-9\.]", string.Empty));
+                pi.Volume =(double) Convert.ToDecimal(Regex.Replace(size, @"[^0-9\.]", string.Empty));
                 pi.VolumeUnit = size.Replace(pi.Volume.ToString(), string.Empty).Trim();
                 pi.UPC = UPC;
                 pi.ProductTypeId = 4;

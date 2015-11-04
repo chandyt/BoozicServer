@@ -115,6 +115,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ProductInfo.cs" />
+    <Compile Include="Models\StorePrice.cs" />
     <Compile Include="Models\StoreInfo.cs" />
     <Compile Include="Product.cs">
       <DependentUpon>Boozic.tt</DependentUpon>

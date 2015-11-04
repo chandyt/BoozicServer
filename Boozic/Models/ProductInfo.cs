@@ -9,81 +9,109 @@ namespace Boozic.Models
     /// <summary>
     /// This is the modal class that stores the stores data and returned to the users
     /// </summary>
-    public class ProductInfo : vwProductsWithStorePrice
+    public class ProductInfo 
     {
 
         public ProductInfo()
         { }
 
-        //int productId;
-        //string productName;
-        //int productTypeId;
-        //string productType;
-        //double abv;
-        //string upc;
-        //string volumeUnit;
-        //double volume;
+        int productId;
+        string productName;
+        int productTypeId;
+        string productType;
+        double abv=0;
+        string upc;
+        string volumeUnit;
+        double volume=0;
         bool isFoundInDatabase=true;
-        decimal distanceCalcualted=0;
-        StoreInfo cheapestStore;
-        StoreInfo closestStore;
-        
-        //[JsonProperty(PropertyName = "ProductID")]
-        //public int ProductId
-        //{
-        //    get { return productId; }
-        //    set { productId = value; }
-        //}
+        StorePrice cheapestStore;
+        StorePrice closestStore;
+        int rating1, rating2, rating3, rating4, rating5;
+        double combinedRating;
+        int productParentTypeId;
+        string productParentType;
+        string containerType;
+        bool isClosestStoreAndCheapestStoreSame;
 
-        //[JsonProperty(PropertyName = "UPC")]
-        //public string UPC
-        //{
-        //    get { return upc; }
-        //    set { upc = value; }
-        //}
+        [JsonProperty(PropertyName = "ProductID")]
+        public int ProductId
+        {
+            get { return productId; }
+            set { productId = value; }
+        }
 
-        //[JsonProperty(PropertyName = "ProductName")]
-        //public string ProductName
-        //{
-        //    get { return productName; }
-        //    set { productName = value; }
-        //}
+        [JsonProperty(PropertyName = "UPC")]
+        public string UPC
+        {
+            get { return upc; }
+            set { upc = value; }
+        }
 
-        //[JsonProperty(PropertyName = "ProductTypeId")]
-        //public int ProductTypeId
-        //{
-        //    get { return productTypeId; }
-        //    set { productTypeId = value; }
-        //}
+        [JsonProperty(PropertyName = "ProductName")]
+        public string ProductName
+        {
+            get { return productName; }
+            set { productName = value; }
+        }
 
-        //[JsonProperty(PropertyName = "ProductType")]
-        //public string ProductType
-        //{
-        //    get { return productType; }
-        //    set { productType = value; }
-        //}
+        [JsonProperty(PropertyName = "ProductTypeId")]
+        public int ProductTypeId
+        {
+            get { return productTypeId; }
+            set { productTypeId = value; }
+        }
 
-        //[JsonProperty(PropertyName = "ABV")]
-        //public double ABV
-        //{
-        //    get { return abv; }
-        //    set { abv = value; }
-        //}
+        [JsonProperty(PropertyName = "ProductType")]
+        public string ProductType
+        {
+            get { return productType; }
+            set { productType = value; }
+        }
+
+        [JsonProperty(PropertyName = "ProductParentTypeId")]
+        public int ProductParentTypeId
+        {
+            get { return productParentTypeId; }
+            set { productParentTypeId = value; }
+        }
+
+        [JsonProperty(PropertyName = "ProductParentType")]
+        public string ProductParentType
+        {
+            get { return productParentType; }
+            set { productParentType = value; }
+        }
+
+        [JsonProperty(PropertyName = "ABV")]
+        public double ABV
+        {
+            get { return abv; }
+            set { abv = value; }
+        }
 
 
-        //[JsonProperty(PropertyName = "VolumeUnit")]
-        //public string VolumeUnit
-        //{
-        //    get { return volumeUnit; }
-        //    set { volumeUnit = value; }
-        //}
+        [JsonProperty(PropertyName = "VolumeUnit")]
+        public string VolumeUnit
+        {
+            get { return volumeUnit; }
+            set { volumeUnit = value; }
+        }
 
-        //[JsonProperty(PropertyName = "Volume")]
-        //public double Volume
-        //{
-        //    get { return volume; }
-        //    set { volume = value; }
-        //}
+        [JsonProperty(PropertyName = "Volume")]
+        public double Volume
+        {
+            get {
+                return volume;
+            }
+            set { volume = value; }
+        }
+
+        [JsonProperty(PropertyName = "ContainerType")]
+        public string ContainerType
+        {
+            get { return containerType; }
+            set { containerType = value; }
+        }
 
         [JsonProperty(PropertyName = "IsFoundInDatabase")]
         public bool IsFoundInDatabase
@@ -92,26 +120,71 @@ namespace Boozic.Models
             set { isFoundInDatabase = value; }
         }
 
-        [JsonProperty(PropertyName = "DistanceCalculatedInMiles")]
-        public decimal DistanceCalculated
-        {
-            get { return distanceCalcualted; }
-            set { distanceCalcualted = value; }
-        }
-
         [JsonProperty(PropertyName = "CheapestStore")]
-        public StoreInfo CheapestStore
+        public StorePrice CheapestStore
         {
             get { return cheapestStore; }
             set { cheapestStore = value; }
         }
 
         [JsonProperty(PropertyName = "ClosestStore")]
-        public StoreInfo ClosestStore
+        public StorePrice ClosestStore
         {
             get { return closestStore; }
             set { closestStore = value; }
         }
+
+        [JsonProperty(PropertyName = "Rating1")]
+        public int Rating1
+        {
+            get { return rating1; }
+            set { rating1 = value; }
+        }
+
+        [JsonProperty(PropertyName = "Rating2")]
+        public int Rating2
+        {
+            get { return rating2; }
+            set { rating2 = value; }
+        }
+
+        [JsonProperty(PropertyName = "Rating3")]
+        public int Rating3
+        {
+            get { return rating3; }
+            set { rating3 = value; }
+        }
+
+        [JsonProperty(PropertyName = "Rating4")]
+        public int Rating4
+        {
+            get { return rating4; }
+            set { rating4 = value; }
+        }
+
+        [JsonProperty(PropertyName = "Rating5")]
+        public int Rating5
+        {
+            get { return rating5; }
+            set { rating5 = value; }
+        }
+
+        [JsonProperty(PropertyName = "CombinedRating")]
+        public double CombinedRating
+        {
+            get { return combinedRating; }
+            set { combinedRating = value; }
+        }
+
+        [JsonProperty(PropertyName = "IsClosestStoreAndCheapestStoreSame")]
+        public Boolean IsClosestStoreAndCheapestStoreSame
+        {
+            get {return isClosestStoreAndCheapestStoreSame;}
+            set { isClosestStoreAndCheapestStoreSame = value; }
+        }
+
+
+
 
     }
 

@@ -78,12 +78,6 @@ namespace Boozic.Controllers
                                     int SortOption=0)
         {
 
-            // Product Paret type Id = 001, 010,011.....
-            // Search by UPC: search for stores in 10 mile and then qry the UPC in that stores
-            //Fav: Device Id and ProdId
-            //Change view to use products as master
-
-
             List<Models.ProductInfo> products = productService.filterProducts(latitude, longitude, ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice,
                                       LowestRating, HighestRating, LowestABV, HighestABV, SortOption);
             return Ok(products);

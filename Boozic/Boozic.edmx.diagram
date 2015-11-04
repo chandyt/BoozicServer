@@ -19,10 +19,10 @@
         <AssociationConnector Association="BoozicModel.FK_SaleInfo_ProductInfo1" />
         <AssociationConnector Association="BoozicModel.FK_UserProductRating_Products" />
         <AssociationConnector Association="BoozicModel.FK_SaleInfo_StoreInfo1" />
-        <EntityTypeShape EntityType="BoozicModel.vwProductsWithStorePrice" Width="1.5" PointX="0.75" PointY="7.75" />
         <AssociationConnector Association="BoozicModel.FK_Products_TypesDetail1" />
         <EntityTypeShape EntityType="BoozicModel.UserFavourite" Width="1.5" PointX="5.25" PointY="0.875" />
         <AssociationConnector Association="BoozicModel.FK_UserFavourites_Products" />
+        <EntityTypeShape EntityType="BoozicModel.vwProductsWithStorePrice" Width="1.5" PointX="0.75" PointY="7.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

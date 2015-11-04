@@ -1,17 +1,33 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Boozic.Models
 {
-    /// <summary>
-    /// This is the modal class that stores the stores data and returned to the users
-    /// </summary>
-    public class StoreInfo
+    public class StorePrice 
     {
+        public StorePrice()
+        {
+        }
+        public StorePrice(StoreInfo aStoreInfo)
+        {
+            this.Distance = aStoreInfo.Distance;
+            this.Duration = aStoreInfo.Duration;
+            this.IsOpenNow = aStoreInfo.IsOpenNow;
+            this.Latitude = aStoreInfo.Latitude;
+            this.Longitude = aStoreInfo.Longitude;
+            this.StoreAddress = aStoreInfo.StoreAddress;
+            this.StoreID = aStoreInfo.StoreID;
+            this.StoreName = aStoreInfo.StoreName;
+        }
 
+        double price = 0;
+        DateTime lastUpdated;
         int storeID;
         string storeName;
         string storeAddress;
@@ -56,10 +72,10 @@ namespace Boozic.Models
             set { longitude = value; }
         }
         /// <summary>
-        /// Distance in Meters
+        /// Distance in Miles
         /// 
         /// </summary>
-        [JsonProperty(PropertyName = "DistanceInMeters")]
+        [JsonProperty(PropertyName = "DistanceInMiles")]
         public double Distance
         {
             get { return distance; }
@@ -82,8 +98,16 @@ namespace Boozic.Models
             get { return isOpenNow; }
             set { isOpenNow = value; }
         }
+        public double Price
+        {
+            get { return price; }
+            set { price = value; }
+        }
 
+        public DateTime LastUpdated
+        {
+            get { return lastUpdated; }
+            set { lastUpdated = value; }
+        }
     }
-
-
 }
