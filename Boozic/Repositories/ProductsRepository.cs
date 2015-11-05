@@ -243,7 +243,7 @@ namespace Boozic.Repositories
 
         public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
                               int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
-                               int SortOption = 0)
+                               int SortOption = 0, bool SortByCheapestStorePrice = false)
         {
 
             List<Product> lstProducts = sdContext.Products.ToList();
@@ -335,12 +335,12 @@ namespace Boozic.Repositories
             }
             if (LowestPrice >= 0)
             {
-                lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CheapestStore.Price >= LowestPrice; });
+                lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.ClosestStore.Price >= LowestPrice; });
             }
 
             if (HighestPrice <= 9999999)
             {
-                lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CheapestStore.Price <= HighestPrice; });
+                lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.ClosestStore.Price <= HighestPrice; });
             }
 
             if (LowestRating >= 0)
@@ -365,9 +365,14 @@ namespace Boozic.Repositories
             {
                 String prodSort = Convert.ToString(SortOption, 2).PadLeft(6, '0');
 
-                if (prodSort.Substring(0, 1) == "1")
+                if (prodSort.Substring(0, 1) == "1" && SortByCheapestStorePrice == false)
+                    lstProductInfo = lstProductInfo.OrderBy(o => o.ClosestStore.Price).ToList();
+                if (prodSort.Substring(1, 1) == "1" && SortByCheapestStorePrice == false)
+                    lstProductInfo = lstProductInfo.OrderByDescending(o => o.ClosestStore.Price).ToList();
+
+                if (prodSort.Substring(0, 1) == "1" && SortByCheapestStorePrice == true)
                     lstProductInfo = lstProductInfo.OrderBy(o => o.CheapestStore.Price).ToList();
-                if (prodSort.Substring(1, 1) == "1")
+                if (prodSort.Substring(1, 1) == "1" && SortByCheapestStorePrice == true)
                     lstProductInfo = lstProductInfo.OrderByDescending(o => o.CheapestStore.Price).ToList();
 
                 if (prodSort.Substring(2, 1) == "1")
@@ -406,7 +411,7 @@ namespace Boozic.Repositories
                 Store tmpStore = ss.GetById(lstTemp[0].StoreID);
                 st= new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude, 0.2)[0]);
                 st.Price =(double) lstTemp[0].Price;
-                st.LastUpdated =(DateTime) lstTemp[0].LastUpdated;
+                st.LastUpdated = Convert.ToDateTime(lstTemp[0].LastUpdated).ToString("MM/dd/yy");
                 st.StoreID = lstTemp[0].StoreID;
                 Dictionary<String, Double> distanceResult = ls.getDistanceAndTime(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
                 st.Distance = distanceResult["Distance"];
@@ -427,7 +432,7 @@ namespace Boozic.Repositories
             int closestStoreId = 0;
             double DistanceFromCurrentLocation = 9999999;
             double ClosestStorePrice = 0;
-            DateTime lastUpdated=DateTime.Now;
+            //DateTime lastUpdated=DateTime.Now;
 
             Models.StorePrice st= null;
             foreach (Boozic.ProductsPrice pr in lstTemp)
@@ -443,13 +448,13 @@ namespace Boozic.Repositories
                     DistanceFromCurrentLocation = tmpDistance;
                     
                     ClosestStorePrice =(double) pr.Price;
-                    lastUpdated =(DateTime) pr.LastUpdated;
+                   // lastUpdated =(DateTime) pr.LastUpdated;
 
                     st = new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude,0.2)[0]);
                     st.Distance=DistanceFromCurrentLocation;
                     st.Duration = distanceResult["Duration"];
                     st.Price = (double)ClosestStorePrice;
-                    st.LastUpdated = lastUpdated;
+                    st.LastUpdated = Convert.ToDateTime(pr.LastUpdated).ToString("MM/dd/yy");
                     st.StoreID = (int)pr.StoreID;
                 }
                 

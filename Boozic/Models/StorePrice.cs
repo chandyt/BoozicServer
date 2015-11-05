@@ -27,7 +27,7 @@ namespace Boozic.Models
         }
 
         double price = 0;
-        DateTime lastUpdated;
+        string lastUpdated;
         int storeID;
         string storeName;
         string storeAddress;
@@ -104,7 +104,7 @@ namespace Boozic.Models
             set { price = value; }
         }
 
-        public DateTime LastUpdated
+        public string LastUpdated
         {
             get { return lastUpdated; }
             set { lastUpdated = value; }
