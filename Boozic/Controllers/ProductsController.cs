@@ -82,5 +82,14 @@ namespace Boozic.Controllers
                                       LowestRating, HighestRating, LowestABV, HighestABV, SortOption, SortByCheapestStorePrice);
             return Ok(products);
         }
+
+
+        [HttpGet]
+        public IHttpActionResult updateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int rating)
+        {
+
+            string UpdateStatus =  productService.UpdateProduct( ProductId,  StoreId,  Price,  ABV,  Volume,  VolumeUnit,  ContainerType,  DeviceId,  rating);
+            return Ok(UpdateStatus);
+        }
     }
 }

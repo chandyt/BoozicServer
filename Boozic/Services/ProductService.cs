@@ -112,5 +112,10 @@ namespace Boozic.Services
            return repository.filterProducts(latitude, longitude, ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice,
                           LowestRating, HighestRating, LowestABV, HighestABV, SortOption, SortByCheapestStorePrice);
        }
+
+       public String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int rating)
+       {
+           return repository.UpdateProduct(ProductId, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, rating);
+       }
     }
 }

@@ -144,6 +144,11 @@ namespace Boozic.Services
                         Result.Add("Duration", 9999);
                     }
                 }
+                else
+                {
+                    Result.Add("Distance", 9999);
+                    Result.Add("Duration", 9999);
+                }
             }
             return Result;
         }

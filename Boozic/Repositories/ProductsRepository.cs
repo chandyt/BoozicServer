@@ -84,162 +84,6 @@ namespace Boozic.Repositories
 
         }
 
-        //public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
-        //                        int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
-        //                         int SortOption = 0)
-        //{
-
-        //    List<vwProductsWithStorePrice> lstProducts = sdContext.vwProductsWithStorePrices.ToList();
-        //    lstProducts = lstProducts.OrderBy(o => o.StoreID).ToList();
-        //    List<Models.ProductInfo> lstProductInfo = new List<Models.ProductInfo>();
-
-        //    //calculating distance and filtering by radius
-        //    int currentStoreId = 0;
-        //    double DistanceFromCurrentLocation = 0;
-        //    LocationService ls = new LocationService();
-        //    StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
-
-
-
-        //    foreach (vwProductsWithStorePrice p in lstProducts)
-        //    {
-        //        Models.ProductInfo tmpProductInfo = new Models.ProductInfo();
-        //        CopyProperties(tmpProductInfo, p);
-        //        if (p.StoreID != currentStoreId)
-        //        {
-        //            DistanceFromCurrentLocation = ls.getDistanceAndTime(latitude, longitude, (double)p.Latitude, (double)p.Longitude)["Distance"];
-        //            currentStoreId = (int)p.StoreID;
-        //        }
-        //        tmpProductInfo.DistanceCalculated = (decimal)DistanceFromCurrentLocation;
-        //        lstProductInfo.Add(tmpProductInfo);
-        //    }
-
-        //    lstProductInfo = lstProductInfo.OrderBy(o => o.ProductId).ToList();
-        //    int currentProductID = 0;
-        //    for (int i = 0; i < lstProductInfo.Count; i++)
-        //    {
-        //        if (lstProductInfo[i].ProductId != currentProductID)
-        //        {
-        //            Models.StoreInfo storeInfo = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
-
-        //            Models.Store st = new Models.Store(storeInfo);
-        //            st.Distance = ls.getDistanceAndTime(latitude, longitude, (double)storeInfo.Latitude, (double)storeInfo.Longitude)["Distance"];
-        //            st.Duration = ls.getDistanceAndTime(latitude, longitude, (double)storeInfo.Latitude, (double)storeInfo.Longitude)["Duration"];
-        //            //Store storeInfo = ss.GetById(lstProductInfo[i].StoreID);
-        //            lstProductInfo.Where(x => x.ProductId == lstProductInfo[i].ProductId).ToList().ForEach(f => f.ClosestStore = st);
-        //            //Models.StoreInfo CheapestStore = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
-        //            //Store CheapestStore = ss.GetById(lstProductInfo[i].StoreID);
-        //            lstProductInfo.Where(x => x.ProductId == lstProductInfo[i].ProductId).ToList().ForEach(f => f.CheapestStore = st);
-
-        //            currentProductID = (int)lstProductInfo[i].ProductId;
-        //        }
-        //        else
-        //        {
-
-        //            if (lstProductInfo[i].DistanceCalculated < lstProductInfo[i - 1].DistanceCalculated)
-        //            {
-        //                Models.StoreInfo storeInfo = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
-        //                Models.Store st = new Models.Store(storeInfo);
-        //                st.Distance = ls.getDistanceAndTime(latitude, longitude, (double)storeInfo.Latitude, (double)storeInfo.Longitude)["Distance"];
-        //                st.Duration = ls.getDistanceAndTime(latitude, longitude, (double)storeInfo.Latitude, (double)storeInfo.Longitude)["Duration"];
-
-        //                lstProductInfo.Where(x => x.ProductId == lstProductInfo[i].ProductId).ToList().ForEach(f => f.ClosestStore = st);
-
-        //            }
-
-        //            if (lstProductInfo[i].Price < lstProductInfo[i - 1].Price)
-        //            {
-        //                Models.StoreInfo storeInfo = ls.getStores((double)lstProductInfo[i].Latitude, (double)lstProductInfo[i].Longitude, 0.2)[0];
-        //                Models.Store st = new Models.Store(storeInfo);
-        //                st.Distance = ls.getDistanceAndTime(latitude, longitude, (double)storeInfo.Latitude, (double)storeInfo.Longitude)["Distance"];
-        //                st.Duration = ls.getDistanceAndTime(latitude, longitude, (double)storeInfo.Latitude, (double)storeInfo.Longitude)["Duration"];
-        //                lstProductInfo.Where(x => x.ProductId == lstProductInfo[i].ProductId).ToList().ForEach(f => f.CheapestStore = st);
-        //            }
-        //        }
-
-        //    }
-
-
-        //    lstProductInfo = lstProductInfo.GroupBy(x => x.ProductId).Select(g => g.First()).ToList();
-        //    //Default Radius =2 Miles
-        //    lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.DistanceCalculated <= Radius; });
-
-
-
-        //    if (ProductTypeId > 0)
-        //    {
-        //        lstProductInfo = lstProductInfo.FindAll(s => s.ProductId.Equals(ProductTypeId));
-        //    }
-
-
-
-        //    if (ProductParentTypeId > 0)
-        //    {
-        //        String prodFilter = Convert.ToString(ProductParentTypeId, 2).PadLeft(3, '0');
-        //        int Wine = 1;
-        //        int Beer = 2;
-        //        int Liquors = 3;
-
-        //        if (prodFilter.Substring(0, 1) == "0")
-        //            Wine = 0;
-        //        if (prodFilter.Substring(1, 1) == "0")
-        //            Beer = 0;
-        //        if (prodFilter.Substring(2, 1) == "0")
-        //            Liquors = 0;
-        //        lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.ProductParentTypeId == Wine || s.ProductParentTypeId == Beer || s.ProductParentTypeId == Liquors; });
-
-        //    }
-        //    if (LowestPrice >= 0)
-        //    {
-        //        lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.Price >= LowestPrice; });
-        //    }
-
-        //    if (HighestPrice <= 9999999)
-        //    {
-        //        lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.Price <= HighestPrice; });
-        //    }
-
-        //    if (LowestRating >= 0)
-        //    {
-        //        lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CombinedRating >= LowestRating; });
-        //    }
-        //    if (HighestRating <= 5)
-        //    {
-        //        lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CombinedRating <= HighestRating; });
-        //    }
-
-        //    if (LowestABV >= 0)
-        //    {
-        //        lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.ABV >= LowestABV; });
-        //    }
-        //    if (LowestABV <= 5)
-        //    {
-        //        lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.ABV <= HighestABV; });
-        //    }
-
-        //    if (SortOption > 0)
-        //    {
-        //        String prodSort = Convert.ToString(SortOption, 2).PadLeft(6, '0');
-
-        //        if (prodSort.Substring(0, 1) == "1")
-        //            lstProductInfo = lstProductInfo.OrderBy(o => o.Price).ToList();
-        //        if (prodSort.Substring(1, 1) == "1")
-        //            lstProductInfo = lstProductInfo.OrderByDescending(o => o.Price).ToList();
-
-        //        if (prodSort.Substring(2, 1) == "1")
-        //            lstProductInfo = lstProductInfo.OrderBy(o => o.ABV).ToList();
-        //        if (prodSort.Substring(3, 1) == "1")
-        //            lstProductInfo = lstProductInfo.OrderByDescending(o => o.ABV).ToList();
-
-        //        if (prodSort.Substring(4, 1) == "1")
-        //            lstProductInfo = lstProductInfo.OrderBy(o => o.CombinedRating).ToList();
-        //        if (prodSort.Substring(5, 1) == "1")
-        //            lstProductInfo = lstProductInfo.OrderByDescending(o => o.CombinedRating).ToList();
-
-        //    }
-        //    return lstProductInfo;
-        //}
-
 
         public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
                               int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
@@ -389,16 +233,6 @@ namespace Boozic.Repositories
             return lstProductInfo;
         }
 
-
-
-
-        private double getProductPriceinStore(int StoreId, int ProductId)
-        {
-
-            return (double)sdContext.ProductsPrices.FirstOrDefault(x => x.StoreID == (int)StoreId && x.ProductId == (int)ProductId).Price;
-        }
-
-
         private Models.StorePrice getCheapestStore(int ProductId, double SourceLatitude, double SourceLongitude)
         {
             List<Boozic.ProductsPrice> lstTemp = sdContext.ProductsPrices.ToList().FindAll(delegate(Boozic.ProductsPrice s) { return s.ProductId == ProductId; }).ToList();
@@ -416,8 +250,7 @@ namespace Boozic.Repositories
                 Dictionary<String, Double> distanceResult = ls.getDistanceAndTime(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
                 st.Distance = distanceResult["Distance"];
                 st.Duration = distanceResult["Duration"];
-
-               
+              
             }
             return st;
         }
@@ -464,9 +297,7 @@ namespace Boozic.Repositories
             
             return st;
         }
-
-
-        
+  
 
         static void CopyProperties(object dest, object src)
         {
@@ -474,6 +305,82 @@ namespace Boozic.Repositories
             {
                 item.SetValue(dest, item.GetValue(src));
             }
+        }
+
+        public String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType,  string DeviceId, int Rating)
+        {
+            String returnMessage = "Completed Succesfully";
+            try
+            {
+                Product aProduct = sdContext.Products.SingleOrDefault(x => x.Id == (int)ProductId);
+                aProduct.ABV = (decimal)ABV;
+                aProduct.Volume = (decimal)Volume;
+                aProduct.VolumeUnit = VolumeUnit;
+                aProduct.ContainerType = ContainerType;
+
+                ProductsPrice aProductPrice = sdContext.ProductsPrices.SingleOrDefault(x => x.Id == (int)ProductId && x.StoreID == (int)StoreId);
+               if (aProductPrice != null)
+               {
+                   aProductPrice.Price = (decimal)Price;
+                   aProductPrice.LastUpdated = DateTime.Now;
+               }
+                
+
+                UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)ProductId && x.DeviceId == DeviceId);
+                if (aProductPrice !=null)
+                    aUserProductRating.Rating = (int)Rating;
+                else
+                {
+                    aUserProductRating = new UserProductRating();
+                    aUserProductRating.DeviceId = DeviceId;
+                    aUserProductRating.Rating = Rating;
+                    aUserProductRating.ProductId = ProductId;
+                    sdContext.UserProductRatings.Add(aUserProductRating);
+                }
+
+                ProductRating aProductRating = sdContext.ProductRatings.SingleOrDefault(x => x.ProductId == (int)ProductId);
+                if (aProductRating != null)
+                {
+                    if (Rating == 1)
+                        aProductRating.Rating1 += 1;
+                    if (Rating == 2)
+                        aProductRating.Rating2 += 1;
+                    if (Rating == 3)
+                        aProductRating.Rating3 += 1;
+                    if (Rating == 4)
+                        aProductRating.Rating4 += 1;
+                    if (Rating == 5)
+                        aProductRating.Rating5 += 1;
+                    //TODO: Update Combined Rating
+                }
+                else
+                {
+                    aProductRating = new ProductRating();
+                    if (Rating == 1)
+                        aProductRating.Rating1 = 1;
+                    if (Rating == 2)
+                        aProductRating.Rating2 = 1;
+                    if (Rating == 3)
+                        aProductRating.Rating3 = 1;
+                    if (Rating == 4)
+                        aProductRating.Rating4 = 1;
+                    if (Rating == 5)
+                        aProductRating.Rating5 = 1;
+                    //TODO: Update Combined Rating
+                    sdContext.ProductRatings.Add(aProductRating);
+                }
+
+
+
+                sdContext.SaveChanges();
+
+
+            }
+            catch (Exception ex)
+            {
+                returnMessage = ex.Message;
+            }
+            return returnMessage;
         }
 
     }
