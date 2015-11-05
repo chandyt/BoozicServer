@@ -113,9 +113,14 @@ namespace Boozic.Services
                           LowestRating, HighestRating, LowestABV, HighestABV, SortOption, SortByCheapestStorePrice);
        }
 
-       public String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int rating)
+       public String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
        {
-           return repository.UpdateProduct(ProductId, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, rating);
+           return repository.UpdateProduct(ProductId, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
+       }
+
+       public String InsertProduct(string UPC, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
+       {
+           return repository.InsertProduct(UPC, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
        }
     }
 }

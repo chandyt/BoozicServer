@@ -85,11 +85,18 @@ namespace Boozic.Controllers
 
 
         [HttpGet]
-        public IHttpActionResult updateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int rating)
+        public IHttpActionResult updateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
         {
 
-            string UpdateStatus =  productService.UpdateProduct( ProductId,  StoreId,  Price,  ABV,  Volume,  VolumeUnit,  ContainerType,  DeviceId,  rating);
+            string UpdateStatus =  productService.UpdateProduct( ProductId,  StoreId,  Price,  ABV,  Volume,  VolumeUnit,  ContainerType,  DeviceId,  Rating);
             return Ok(UpdateStatus);
+        }
+
+        [HttpGet]
+        public IHttpActionResult InsertProduct(string UPC, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
+        {
+            string InsertStatus = productService.InsertProduct(UPC, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
+            return Ok(InsertStatus);
         }
     }
 }

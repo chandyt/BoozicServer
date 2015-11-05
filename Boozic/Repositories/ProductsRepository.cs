@@ -45,7 +45,7 @@ namespace Boozic.Repositories
 
                 vwProductsWithStorePrice tmpPr = (vwProductsWithStorePrice)sdContext.vwProductsWithStorePrices.SingleOrDefault(x => x.UPC == (string)UPC);
                 Models.ProductInfo pr = new Models.ProductInfo();
-                pr.ProductId =(int) tmpPr.ProductId;
+                pr.ProductId = (int)tmpPr.ProductId;
                 pr.ProductName = tmpPr.ProductName;
                 pr.ProductTypeId = (int)tmpPr.ProductTypeId;
                 pr.UPC = tmpPr.UPC;
@@ -55,7 +55,7 @@ namespace Boozic.Repositories
                 pr.ABV = (double)tmpPr.ABV.GetValueOrDefault();
                 pr.IsFoundInDatabase = true;
                 pr.ProductType = tmpPr.ProductType;
-                pr.ProductParentTypeId =(int) tmpPr.ProductParentTypeId;
+                pr.ProductParentTypeId = (int)tmpPr.ProductParentTypeId;
                 pr.ProductParentType = tmpPr.ProductType;
 
 
@@ -65,7 +65,7 @@ namespace Boozic.Repositories
                 pr.Rating4 = (int)tmpPr.Rating4;
                 pr.Rating5 = (int)tmpPr.Rating5;
                 pr.CombinedRating = (double)tmpPr.CombinedRating;
-   
+
 
                 if (pr.UPC != null)
                 {
@@ -102,14 +102,14 @@ namespace Boozic.Repositories
             foreach (Product p in lstProducts)
             {
                 Models.ProductInfo tmpProductInfo = new Models.ProductInfo();
-                tmpProductInfo.ProductId=p.Id;
+                tmpProductInfo.ProductId = p.Id;
                 tmpProductInfo.ProductName = p.Name;
                 tmpProductInfo.ProductTypeId = p.TypeDetailsId;
                 tmpProductInfo.UPC = p.UPC;
                 tmpProductInfo.Volume = (double)p.Volume.GetValueOrDefault();
                 tmpProductInfo.VolumeUnit = p.VolumeUnit;
                 tmpProductInfo.ContainerType = p.ContainerType;
-                tmpProductInfo.ABV =(double) p.ABV.GetValueOrDefault();
+                tmpProductInfo.ABV = (double)p.ABV.GetValueOrDefault();
                 tmpProductInfo.IsFoundInDatabase = true;
 
                 TypesDetail tmpDetails = sdContext.TypesDetails.SingleOrDefault(x => x.Id == (int)p.TypeDetailsId);
@@ -148,7 +148,7 @@ namespace Boozic.Repositories
                 lstProductInfo.Add(tmpProductInfo);
             }
 
-           
+
             //Default Radius =2 Miles
             lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CheapestStore.Distance <= Radius || s.ClosestStore.Distance <= Radius; });
 
@@ -239,18 +239,19 @@ namespace Boozic.Repositories
             StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
             LocationService ls = new LocationService();
             lstTemp = lstTemp.OrderBy(o => o.Price).ToList();
-            Models.StorePrice st=new Models.StorePrice();
+            Models.StorePrice st = new Models.StorePrice();
             if (lstTemp.Count >= 1)
-            { 
+            {
                 Store tmpStore = ss.GetById(lstTemp[0].StoreID);
-                st= new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude, 0.2)[0]);
-                st.Price =(double) lstTemp[0].Price;
+                st = new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude, 0.2)[0]);
+                st.Price = (double)lstTemp[0].Price;
                 st.LastUpdated = Convert.ToDateTime(lstTemp[0].LastUpdated).ToString("MM/dd/yy");
                 st.StoreID = lstTemp[0].StoreID;
-                Dictionary<String, Double> distanceResult = ls.getDistanceAndTime(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
-                st.Distance = distanceResult["Distance"];
-                st.Duration = distanceResult["Duration"];
-              
+                //Dictionary<String, Double> distanceResult = ls.getDistanceAndTime(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
+                double tmpDistance = distance(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
+                st.Distance = tmpDistance;// distanceResult["Distance"];
+                //st.Duration = distanceResult["Duration"];
+
             }
             return st;
         }
@@ -267,37 +268,39 @@ namespace Boozic.Repositories
             double ClosestStorePrice = 0;
             //DateTime lastUpdated=DateTime.Now;
 
-            Models.StorePrice st= null;
+            Models.StorePrice st = null;
             foreach (Boozic.ProductsPrice pr in lstTemp)
             {
                 Store tmpStore = ss.GetById(pr.StoreID);
 
-                Dictionary<String, Double> distanceResult = ls.getDistanceAndTime(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
-                double tmpDistance = distanceResult["Distance"];
-              
+                //Dictionary<String, Double> distanceResult = ls.getDistanceAndTime(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
+                //double tmpDistance = distanceResult["Distance"];
+
+                double tmpDistance = distance(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
+
                 if (tmpDistance < DistanceFromCurrentLocation)
                 {
                     closestStoreId = (int)pr.StoreID;
                     DistanceFromCurrentLocation = tmpDistance;
-                    
-                    ClosestStorePrice =(double) pr.Price;
-                   // lastUpdated =(DateTime) pr.LastUpdated;
 
-                    st = new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude,0.2)[0]);
-                    st.Distance=DistanceFromCurrentLocation;
-                    st.Duration = distanceResult["Duration"];
+                    ClosestStorePrice = (double)pr.Price;
+                    // lastUpdated =(DateTime) pr.LastUpdated;
+
+                    st = new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude, 0.2)[0]);
+                    st.Distance = DistanceFromCurrentLocation;
+                    //st.Duration = distanceResult["Duration"];
                     st.Price = (double)ClosestStorePrice;
                     st.LastUpdated = Convert.ToDateTime(pr.LastUpdated).ToString("MM/dd/yy");
                     st.StoreID = (int)pr.StoreID;
                 }
-                
+
             }
 
-           
-            
+
+
             return st;
         }
-  
+
 
         static void CopyProperties(object dest, object src)
         {
@@ -307,7 +310,7 @@ namespace Boozic.Repositories
             }
         }
 
-        public String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType,  string DeviceId, int Rating)
+        public String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
         {
             String returnMessage = "Completed Succesfully";
             try
@@ -319,15 +322,15 @@ namespace Boozic.Repositories
                 aProduct.ContainerType = ContainerType;
 
                 ProductsPrice aProductPrice = sdContext.ProductsPrices.SingleOrDefault(x => x.Id == (int)ProductId && x.StoreID == (int)StoreId);
-               if (aProductPrice != null)
-               {
-                   aProductPrice.Price = (decimal)Price;
-                   aProductPrice.LastUpdated = DateTime.Now;
-               }
-                
+                if (aProductPrice != null)
+                {
+                    aProductPrice.Price = (decimal)Price;
+                    aProductPrice.LastUpdated = DateTime.Now;
+                }
+
 
                 UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)ProductId && x.DeviceId == DeviceId);
-                if (aProductPrice !=null)
+                if (aProductPrice != null)
                     aUserProductRating.Rating = (int)Rating;
                 else
                 {
@@ -381,6 +384,86 @@ namespace Boozic.Repositories
                 returnMessage = ex.Message;
             }
             return returnMessage;
+        }
+
+
+        public String InsertProduct(string UPC, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
+        {
+            String returnMessage = "Completed Succesfully";
+            try
+            {
+                Product aProduct = new Product();
+                aProduct.ABV = (decimal)ABV;
+                aProduct.Volume = (decimal)Volume;
+                aProduct.VolumeUnit = VolumeUnit;
+                aProduct.ContainerType = ContainerType;
+                aProduct.UPC = UPC;
+                sdContext.Products.Add(aProduct);
+                sdContext.SaveChanges();
+                int ProductId = aProduct.Id;
+
+                ProductsPrice aProductPrice = new ProductsPrice(); ;
+                aProductPrice.ProductId = ProductId;
+                aProductPrice.StoreID = StoreId;
+                aProductPrice.Price = (decimal)Price;
+                aProductPrice.LastUpdated = DateTime.Now;
+                sdContext.ProductsPrices.Add(aProductPrice);
+                
+                UserProductRating aUserProductRating = aUserProductRating = new UserProductRating();
+                aUserProductRating.DeviceId = DeviceId;
+                aUserProductRating.Rating = Rating;
+                aUserProductRating.ProductId = ProductId;
+                sdContext.UserProductRatings.Add(aUserProductRating);
+
+                ProductRating aProductRating = new ProductRating();
+                aProductRating.ProductId = ProductId;
+                if (Rating == 1)
+                    aProductRating.Rating1 = 1;
+                if (Rating == 2)
+                    aProductRating.Rating2 = 1;
+                if (Rating == 3)
+                    aProductRating.Rating3 = 1;
+                if (Rating == 4)
+                    aProductRating.Rating4 = 1;
+                if (Rating == 5)
+                    aProductRating.Rating5 = 1;
+                //TODO: Update Combined Rating
+                sdContext.ProductRatings.Add(aProductRating);
+
+
+
+                sdContext.SaveChanges();
+
+
+            }
+            catch (Exception ex)
+            {
+                returnMessage = ex.Message;
+            }
+            return returnMessage;
+        }
+
+
+        private double distance(double lat1, double lon1, double lat2, double lon2)
+        {
+            double theta = lon1 - lon2;
+            double dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) + Math.Cos(deg2rad(lat1)) * Math.Cos(deg2rad(lat2)) * Math.Cos(deg2rad(theta));
+            dist = Math.Acos(dist);
+            dist = rad2deg(dist);
+            dist = dist * 60 * 1.1515;
+            return (dist);
+        }
+
+
+        private double deg2rad(double deg)
+        {
+            return (deg * Math.PI / 180.0);
+        }
+
+
+        private double rad2deg(double rad)
+        {
+            return (rad / Math.PI * 180.0);
         }
 
     }

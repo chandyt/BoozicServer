@@ -18,6 +18,8 @@ namespace Boozic.Repositories
                                      int SortOption = 0, bool SortByCheapestStorePrice = false);
 
         String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int rating);
+
+        String InsertProduct(string UPC, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating);
       }
 
 }
