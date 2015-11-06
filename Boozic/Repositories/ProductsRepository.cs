@@ -330,7 +330,7 @@ namespace Boozic.Repositories
 
 
                 UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)ProductId && x.DeviceId == DeviceId);
-                if (aProductPrice != null)
+                if (aUserProductRating != null)
                     aUserProductRating.Rating = (int)Rating;
                 else
                 {
@@ -354,7 +354,8 @@ namespace Boozic.Repositories
                         aProductRating.Rating4 += 1;
                     if (Rating == 5)
                         aProductRating.Rating5 += 1;
-                    //TODO: Update Combined Rating
+
+                    aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
                 }
                 else
                 {
@@ -369,7 +370,8 @@ namespace Boozic.Repositories
                         aProductRating.Rating4 = 1;
                     if (Rating == 5)
                         aProductRating.Rating5 = 1;
-                    //TODO: Update Combined Rating
+
+                    aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
                     sdContext.ProductRatings.Add(aProductRating);
                 }
 
@@ -387,7 +389,7 @@ namespace Boozic.Repositories
         }
 
 
-        public String InsertProduct(string UPC, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
+        public String InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
         {
             String returnMessage = "Completed Succesfully";
             try
@@ -398,6 +400,8 @@ namespace Boozic.Repositories
                 aProduct.VolumeUnit = VolumeUnit;
                 aProduct.ContainerType = ContainerType;
                 aProduct.UPC = UPC;
+                aProduct.Name = ProductName;
+                aProduct.TypeDetailsId = ProductTypeID;
                 sdContext.Products.Add(aProduct);
                 sdContext.SaveChanges();
                 int ProductId = aProduct.Id;
@@ -408,29 +412,40 @@ namespace Boozic.Repositories
                 aProductPrice.Price = (decimal)Price;
                 aProductPrice.LastUpdated = DateTime.Now;
                 sdContext.ProductsPrices.Add(aProductPrice);
-                
-                UserProductRating aUserProductRating = aUserProductRating = new UserProductRating();
-                aUserProductRating.DeviceId = DeviceId;
-                aUserProductRating.Rating = Rating;
-                aUserProductRating.ProductId = ProductId;
-                sdContext.UserProductRatings.Add(aUserProductRating);
 
-                ProductRating aProductRating = new ProductRating();
-                aProductRating.ProductId = ProductId;
-                if (Rating == 1)
-                    aProductRating.Rating1 = 1;
-                if (Rating == 2)
-                    aProductRating.Rating2 = 1;
-                if (Rating == 3)
-                    aProductRating.Rating3 = 1;
-                if (Rating == 4)
-                    aProductRating.Rating4 = 1;
-                if (Rating == 5)
-                    aProductRating.Rating5 = 1;
-                //TODO: Update Combined Rating
-                sdContext.ProductRatings.Add(aProductRating);
+                if (DeviceId != "")
+                {
+                    UserProductRating aUserProductRating = aUserProductRating = new UserProductRating();
+                    aUserProductRating.DeviceId = DeviceId;
+                    aUserProductRating.Rating = Rating;
+                    aUserProductRating.ProductId = ProductId;
+                    sdContext.UserProductRatings.Add(aUserProductRating);
 
+                    ProductRating aProductRating = new ProductRating();
+                    aProductRating.ProductId = ProductId;
+                  
+                    aProductRating.Rating1 = 0;
+                    aProductRating.Rating2 = 0;
+                    aProductRating.Rating3 = 0;
+                    aProductRating.Rating4 = 0;
+                    aProductRating.Rating5 = 0;
+                    aProductRating.CombinedRating = 0;
 
+                    if (Rating == 1)
+                        aProductRating.Rating1 = 1;
+                    if (Rating == 2)
+                        aProductRating.Rating2 = 1;
+                    if (Rating == 3)
+                        aProductRating.Rating3 = 1;
+                    if (Rating == 4)
+                        aProductRating.Rating4 = 1;
+                    if (Rating == 5)
+                        aProductRating.Rating5 = 1;
+
+                    aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
+                    sdContext.ProductRatings.Add(aProductRating);
+
+                }
 
                 sdContext.SaveChanges();
 
@@ -466,5 +481,13 @@ namespace Boozic.Repositories
             return (rad / Math.PI * 180.0);
         }
 
+
+        private double findAverageRating(int rating1,int rating2, int rating3, int rating4, int rating5)
+        {
+            double wTotal = rating1 * 1 + rating2 * 2 + rating3 * 3 + rating4 * 4 + rating5 * 5;
+            double total = rating1+rating2+rating3+rating4+rating5;
+
+          return (wTotal / total);
+        }
     }
 }

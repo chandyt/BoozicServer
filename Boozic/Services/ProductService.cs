@@ -118,9 +118,9 @@ namespace Boozic.Services
            return repository.UpdateProduct(ProductId, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
        }
 
-       public String InsertProduct(string UPC, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
+       public String InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
        {
-           return repository.InsertProduct(UPC, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
+           return repository.InsertProduct(UPC, ProductName,  ProductTypeID, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
        }
     }
 }

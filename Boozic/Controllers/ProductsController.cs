@@ -93,9 +93,9 @@ namespace Boozic.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult InsertProduct(string UPC, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
+        public IHttpActionResult InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
         {
-            string InsertStatus = productService.InsertProduct(UPC, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
+            string InsertStatus = productService.InsertProduct(UPC,ProductName,   ProductTypeID,StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
             return Ok(InsertStatus);
         }
     }
