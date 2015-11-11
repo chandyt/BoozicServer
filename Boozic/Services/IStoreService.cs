@@ -8,6 +8,6 @@ namespace Boozic.Services
 {
     public interface IStoreService
     {
-        Store GetById(int aProductID);
+        Store GetById(int aStoreID);
     }
 }

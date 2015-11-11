@@ -23,6 +23,7 @@ namespace Boozic
         public string StoreName { get; set; }
         public Nullable<decimal> Latitude { get; set; }
         public Nullable<decimal> Longitude { get; set; }
+        public string Address { get; set; }
     
         public virtual ICollection<ProductsPrice> ProductsPrices { get; set; }
     }

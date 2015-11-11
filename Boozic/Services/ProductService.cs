@@ -34,9 +34,9 @@ namespace Boozic.Services
         {
             return repository.GetById(aProductID);
         }
-        public Models.ProductInfo GetByUPC(string aUPC)
+        public Models.ProductInfo GetByUPC(string aUPC,  double latitude, double longitude)
         {
-            return repository.GetByUPC(aUPC);
+            return repository.GetByUPC(aUPC,latitude,longitude);
 
         }
 
@@ -63,12 +63,6 @@ namespace Boozic.Services
             //}
 
 
-            // Validate UPC
-            if (UPC.Length > 12 && UPC.StartsWith("0"))
-                UPC = UPC.Remove(0, 1);
-            //if (UPC.Length > 12 && UPC.EndsWith("0"))
-            //    UPC = UPC.Remove(UPC.Length - 1, 1);
-            // end Validate UPC
 
             
 
@@ -79,7 +73,7 @@ namespace Boozic.Services
             Models.ProductInfo pi=new Models.ProductInfo();
 
             request.Add("rpc_key", UPCAPIKey);
-            request.Add("upc", UPC);
+            request.Add("upc", UPC); 
 
             response = _proxy.Lookup(request);
 
@@ -89,13 +83,24 @@ namespace Boozic.Services
                 string size = response["size"].ToString();
 
                 pi.ProductName = response["description"].ToString();
-                pi.Volume =(double) Convert.ToDecimal(Regex.Replace(size, @"[^0-9\.]", string.Empty));
+                pi.Volume = (double)Convert.ToDecimal(Regex.Replace(size, @"[^0-9\.]", string.Empty));
                 pi.VolumeUnit = size.Replace(pi.Volume.ToString(), string.Empty).Trim();
                 pi.UPC = UPC;
                 pi.ProductTypeId = 4;
                 pi.IsFoundInDatabase = false;
-            }
 
+                Product pr = new Product();
+                pr.Name = pi.ProductName;
+                pr.UPC = UPC;
+                pr.Volume = (decimal)pi.Volume;
+                pr.VolumeUnit = pi.VolumeUnit;
+                pr.TypeDetailsId = 4;
+                pi.ProductId = repository.addProduct(pr);
+
+            }
+            else {
+                pi = null;
+            }
            
             return pi;
         }
@@ -105,8 +110,8 @@ namespace Boozic.Services
             repository.addProduct(aProduct);
         }
 
-       public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
-                                     int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
+       public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, double LowestPrice = 0,
+                                     double HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, double LowestABV = 0, double HighestABV = 100,
                                       int SortOption = 0, bool SortByCheapestStorePrice = false)
        {
            return repository.filterProducts(latitude, longitude, ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice,

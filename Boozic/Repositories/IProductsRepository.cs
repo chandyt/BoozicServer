@@ -9,12 +9,12 @@ namespace Boozic.Repositories
     public interface IProductsRepository: IObjectRepository<Product>
     {
          IEnumerable<Product> GetAll();
-         Models.ProductInfo GetByUPC(string UPC);
+         Models.ProductInfo GetByUPC(string UPC, double latitude, double longitude);
 
-        void addProduct(Product aProduct);
+        int addProduct(Product aProduct);
 
-        List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
-                                    int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
+        List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, double LowestPrice = 0,
+                                    double HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, double LowestABV = 0, double HighestABV = 100,
                                      int SortOption = 0, bool SortByCheapestStorePrice = false);
 
         String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int rating);

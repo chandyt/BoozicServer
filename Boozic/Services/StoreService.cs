@@ -13,9 +13,9 @@ namespace Boozic.Services
         {
             repository = aRepository;
         }
-        public Store GetById(int aSiteSettingId)
+        public Store GetById(int aStoreID)
         {
-            return repository.GetById(aSiteSettingId);
+            return repository.GetById(aStoreID);
         }
         public IEnumerable<Store> GetAll()
         {

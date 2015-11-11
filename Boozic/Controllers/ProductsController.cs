@@ -54,16 +54,24 @@ namespace Boozic.Controllers
 
 
         [HttpGet]
-        public IHttpActionResult getProductInfo(string UPC)
+        public IHttpActionResult getProductInfo(string UPC, double latitude, double longitude)
         {
             Models.ProductInfo p = null;
             if (UPC!= string.Empty)
             {
+                // Validate UPC
+                if (UPC.Length > 12 && UPC.StartsWith("0"))
+                    UPC = UPC.Remove(0, 1);
+                //if (UPC.Length > 12 && UPC.EndsWith("0"))
+                //    UPC = UPC.Remove(UPC.Length - 1, 1);
+                // end Validate UPC
+
                 //0085976033931
                 //5410316442930
-              p=  productService.GetByUPC(UPC);
+              p=  productService.GetByUPC(UPC, latitude, longitude);
               if (p.IsFoundInDatabase==false)
               {
+                  //TODO:store in database
                   p = productService.getProductUsingAPI(UPC);
                     
               }
@@ -73,8 +81,8 @@ namespace Boozic.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult getProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
-                                    int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV=0, int HighestABV=100,
+        public IHttpActionResult getProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, double LowestPrice = 0,
+                                    double HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, double LowestABV=0, double HighestABV=100,
                                     int SortOption = 0, bool SortByCheapestStorePrice = false)
         {
 

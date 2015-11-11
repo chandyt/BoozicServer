@@ -37,56 +37,80 @@ namespace Boozic.Repositories
             }
             return null;
         }
-        public Models.ProductInfo GetByUPC(string UPC)
+        public Models.ProductInfo GetByUPC(string UPC, double latitude, double longitude)
         {
             if (UPC != string.Empty)
             {
 
 
-                vwProductsWithStorePrice tmpPr = (vwProductsWithStorePrice)sdContext.vwProductsWithStorePrices.SingleOrDefault(x => x.UPC == (string)UPC);
+                Product tmpPr = (Product)sdContext.Products.SingleOrDefault(x => x.UPC == (string)UPC);
                 Models.ProductInfo pr = new Models.ProductInfo();
-                pr.ProductId = (int)tmpPr.ProductId;
-                pr.ProductName = tmpPr.ProductName;
-                pr.ProductTypeId = (int)tmpPr.ProductTypeId;
-                pr.UPC = tmpPr.UPC;
-                pr.Volume = (double)tmpPr.Volume.GetValueOrDefault();
-                pr.VolumeUnit = tmpPr.VolumeUnit;
-                pr.ContainerType = tmpPr.ContainerType;
-                pr.ABV = (double)tmpPr.ABV.GetValueOrDefault();
-                pr.IsFoundInDatabase = true;
-                pr.ProductType = tmpPr.ProductType;
-                pr.ProductParentTypeId = (int)tmpPr.ProductParentTypeId;
-                pr.ProductParentType = tmpPr.ProductType;
-
-
-                pr.Rating1 = (int)tmpPr.Rating1;
-                pr.Rating2 = (int)tmpPr.Rating2;
-                pr.Rating3 = (int)tmpPr.Rating3;
-                pr.Rating4 = (int)tmpPr.Rating4;
-                pr.Rating5 = (int)tmpPr.Rating5;
-                pr.CombinedRating = (double)tmpPr.CombinedRating;
-
-
-                if (pr.UPC != null)
+                if (tmpPr != null)
                 {
+                    pr.ProductId = (int)tmpPr.Id;
+                    pr.ProductName = tmpPr.Name;
+                    pr.ProductTypeId = (int)tmpPr.TypeDetailsId;
+                    pr.UPC = tmpPr.UPC;
+                    pr.Volume = (double)tmpPr.Volume.GetValueOrDefault();
+                    pr.VolumeUnit = tmpPr.VolumeUnit;
+                    pr.ContainerType = tmpPr.ContainerType;
+                    pr.ABV = (double)tmpPr.ABV.GetValueOrDefault();
                     pr.IsFoundInDatabase = true;
 
+                    TypesDetail tmpDetails = sdContext.TypesDetails.SingleOrDefault(x => x.Id == (int)tmpPr.TypeDetailsId);
+                    pr.ProductType = tmpDetails.Description;
+
+                    Type tmpParentType = sdContext.Types.SingleOrDefault(x => x.Id == (int)tmpDetails.ParentId);
+                    pr.ProductParentTypeId = tmpParentType.Id;
+                    pr.ProductParentType = tmpParentType.Type1;
+
+                    ProductRating tmpRating = sdContext.ProductRatings.SingleOrDefault(x => x.ProductId == (int)tmpPr.Id);
+                    if (tmpRating != null)
+                    {
+                        pr.Rating1 = (int)tmpRating.Rating1;
+                        pr.Rating2 = (int)tmpRating.Rating2;
+                        pr.Rating3 = (int)tmpRating.Rating3;
+                        pr.Rating4 = (int)tmpRating.Rating4;
+                        pr.Rating5 = (int)tmpRating.Rating5;
+                        pr.CombinedRating = (double)tmpRating.CombinedRating;
+                    }
+                    else
+                    {
+                        pr.Rating1 = 0;
+                        pr.Rating2 = 0;
+                        pr.Rating3 = 0;
+                        pr.Rating4 = 0;
+                        pr.Rating5 = 0;
+                        pr.CombinedRating = 0;
+                    }
+                    pr.CheapestStore = getCheapestStore(pr.ProductId, latitude, longitude);
+                    pr.ClosestStore = getClosestStore(pr.ProductId, latitude, longitude);
+                    pr.IsFoundInDatabase = true;
+                    if (pr.ClosestStore.StoreID > 0 && pr.CheapestStore.StoreID >0 && pr.ClosestStore.StoreID == pr.CheapestStore.StoreID)
+                        pr.IsClosestStoreAndCheapestStoreSame = true;
+                    else
+                        pr.IsClosestStoreAndCheapestStoreSame = false;
+                }
+                else
+                {
+                    pr.IsFoundInDatabase = false;
                 }
                 return pr;
             }
             return null;
         }
 
-        public void addProduct(Product aProduct)
+        public int addProduct(Product aProduct)
         {
             sdContext.Products.Add(aProduct);
             sdContext.SaveChanges();
+            return aProduct.Id;
 
         }
 
 
-        public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, int LowestPrice = 0,
-                              int HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, int LowestABV = 0, int HighestABV = 100,
+        public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, double LowestPrice = 0,
+                              double HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, double LowestABV = 0, double HighestABV = 100,
                                int SortOption = 0, bool SortByCheapestStorePrice = false)
         {
 
@@ -96,7 +120,7 @@ namespace Boozic.Repositories
             List<Models.ProductInfo> lstProductInfo = new List<Models.ProductInfo>();
 
             //calculating distance and filtering by radius
-            LocationService ls = new LocationService();
+            //LocationService ls = new LocationService();
             StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
 
             foreach (Product p in lstProducts)
@@ -141,7 +165,7 @@ namespace Boozic.Repositories
 
                 tmpProductInfo.CheapestStore = getCheapestStore((int)p.Id, latitude, longitude);
                 tmpProductInfo.ClosestStore = getClosestStore((int)p.Id, latitude, longitude);
-                if (tmpProductInfo.ClosestStore.StoreID == tmpProductInfo.CheapestStore.StoreID)
+                if (tmpProductInfo.ClosestStore.StoreID > 0 && tmpProductInfo.CheapestStore.StoreID > 0 && tmpProductInfo.ClosestStore.StoreID == tmpProductInfo.CheapestStore.StoreID)
                     tmpProductInfo.IsClosestStoreAndCheapestStoreSame = true;
                 else
                     tmpProductInfo.IsClosestStoreAndCheapestStoreSame = false;
@@ -237,20 +261,25 @@ namespace Boozic.Repositories
         {
             List<Boozic.ProductsPrice> lstTemp = sdContext.ProductsPrices.ToList().FindAll(delegate(Boozic.ProductsPrice s) { return s.ProductId == ProductId; }).ToList();
             StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
-            LocationService ls = new LocationService();
+            //LocationService ls = new LocationService();
             lstTemp = lstTemp.OrderBy(o => o.Price).ToList();
             Models.StorePrice st = new Models.StorePrice();
             if (lstTemp.Count >= 1)
             {
-                Store tmpStore = ss.GetById(lstTemp[0].StoreID);
-                st = new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude, 0.2)[0]);
+                Store cheapestStore = ss.GetById(lstTemp[0].StoreID);
+                //st = new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude, 0.2)[0]);
+                st.StoreID = cheapestStore.Id;
+                st.StoreName = cheapestStore.StoreName;
+                st.StoreAddress = cheapestStore.Address;
+                st.Latitude = (double)cheapestStore.Latitude;
+                st.Longitude = (double)cheapestStore.Longitude;
+
                 st.Price = (double)lstTemp[0].Price;
                 st.LastUpdated = Convert.ToDateTime(lstTemp[0].LastUpdated).ToString("MM/dd/yy");
                 st.StoreID = lstTemp[0].StoreID;
-                //Dictionary<String, Double> distanceResult = ls.getDistanceAndTime(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
-                double tmpDistance = distance(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
-                st.Distance = tmpDistance;// distanceResult["Distance"];
-                //st.Duration = distanceResult["Duration"];
+
+                double tmpDistance = distance(SourceLatitude, SourceLongitude, (double)cheapestStore.Latitude, (double)cheapestStore.Longitude);
+                st.Distance = tmpDistance;
 
             }
             return st;
@@ -261,20 +290,19 @@ namespace Boozic.Repositories
         {
             List<Boozic.ProductsPrice> lstTemp = sdContext.ProductsPrices.ToList().FindAll(delegate(Boozic.ProductsPrice s) { return s.ProductId == ProductId; }).ToList();
             StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
-            LocationService ls = new LocationService();
+            // LocationService ls = new LocationService();
 
             int closestStoreId = 0;
             double DistanceFromCurrentLocation = 9999999;
             double ClosestStorePrice = 0;
             //DateTime lastUpdated=DateTime.Now;
 
-            Models.StorePrice st = null;
+            Models.StorePrice st = new Models.StorePrice();
             foreach (Boozic.ProductsPrice pr in lstTemp)
             {
                 Store tmpStore = ss.GetById(pr.StoreID);
 
-                //Dictionary<String, Double> distanceResult = ls.getDistanceAndTime(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
-                //double tmpDistance = distanceResult["Distance"];
+
 
                 double tmpDistance = distance(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
 
@@ -284,9 +312,15 @@ namespace Boozic.Repositories
                     DistanceFromCurrentLocation = tmpDistance;
 
                     ClosestStorePrice = (double)pr.Price;
-                    // lastUpdated =(DateTime) pr.LastUpdated;
 
-                    st = new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude, 0.2)[0]);
+                    Store closestStore = ss.GetById(closestStoreId);
+                    st.StoreID = closestStore.Id;
+                    st.StoreName = closestStore.StoreName;
+                    st.StoreAddress = closestStore.Address;
+                    st.Latitude = (double)closestStore.Latitude;
+                    st.Longitude = (double)closestStore.Longitude;
+
+                    //st = new Models.StorePrice(ls.getStores((double)tmpStore.Latitude, (double)tmpStore.Longitude, 0.2)[0]);
                     st.Distance = DistanceFromCurrentLocation;
                     //st.Duration = distanceResult["Duration"];
                     st.Price = (double)ClosestStorePrice;
@@ -302,13 +336,13 @@ namespace Boozic.Repositories
         }
 
 
-        static void CopyProperties(object dest, object src)
-        {
-            foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
-            {
-                item.SetValue(dest, item.GetValue(src));
-            }
-        }
+        //static void CopyProperties(object dest, object src)
+        //{
+        //    foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
+        //    {
+        //        item.SetValue(dest, item.GetValue(src));
+        //    }
+        //}
 
         public String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
         {
@@ -423,7 +457,7 @@ namespace Boozic.Repositories
 
                     ProductRating aProductRating = new ProductRating();
                     aProductRating.ProductId = ProductId;
-                  
+
                     aProductRating.Rating1 = 0;
                     aProductRating.Rating2 = 0;
                     aProductRating.Rating3 = 0;
@@ -466,7 +500,7 @@ namespace Boozic.Repositories
             dist = Math.Acos(dist);
             dist = rad2deg(dist);
             dist = dist * 60 * 1.1515;
-            return (dist);
+            return (Math.Round(dist, 2));
         }
 
 
@@ -482,12 +516,12 @@ namespace Boozic.Repositories
         }
 
 
-        private double findAverageRating(int rating1,int rating2, int rating3, int rating4, int rating5)
+        private double findAverageRating(int rating1, int rating2, int rating3, int rating4, int rating5)
         {
             double wTotal = rating1 * 1 + rating2 * 2 + rating3 * 3 + rating4 * 4 + rating5 * 5;
-            double total = rating1+rating2+rating3+rating4+rating5;
+            double total = rating1 + rating2 + rating3 + rating4 + rating5;
 
-          return (wTotal / total);
+            return Math.Round((wTotal / total), 2);
         }
     }
 }
