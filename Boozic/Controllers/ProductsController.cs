@@ -56,7 +56,7 @@ namespace Boozic.Controllers
         [HttpGet]
         public IHttpActionResult getProductInfo(string UPC, double latitude, double longitude)
         {
-            Models.ProductInfo p = null;
+            Models.ProductInfo p = new Models.ProductInfo();
             if (UPC!= string.Empty)
             {
                 // Validate UPC
@@ -69,11 +69,11 @@ namespace Boozic.Controllers
                 //0085976033931
                 //5410316442930
               p=  productService.GetByUPC(UPC, latitude, longitude);
-              if (p.IsFoundInDatabase==false)
+              
+              if (p.IsFoundInDatabase!=0)
               {
                   //TODO:store in database
                   p = productService.getProductUsingAPI(UPC);
-                    
               }
             }
 

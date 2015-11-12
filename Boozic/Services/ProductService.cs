@@ -87,7 +87,7 @@ namespace Boozic.Services
                 pi.VolumeUnit = size.Replace(pi.Volume.ToString(), string.Empty).Trim();
                 pi.UPC = UPC;
                 pi.ProductTypeId = 4;
-                pi.IsFoundInDatabase = false;
+                pi.IsFoundInDatabase = 1;
 
                 Product pr = new Product();
                 pr.Name = pi.ProductName;
@@ -99,7 +99,7 @@ namespace Boozic.Services
 
             }
             else {
-                pi = null;
+                pi.IsFoundInDatabase=2;
             }
            
             return pi;

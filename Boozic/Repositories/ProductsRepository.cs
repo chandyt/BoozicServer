@@ -55,7 +55,7 @@ namespace Boozic.Repositories
                     pr.VolumeUnit = tmpPr.VolumeUnit;
                     pr.ContainerType = tmpPr.ContainerType;
                     pr.ABV = (double)tmpPr.ABV.GetValueOrDefault();
-                    pr.IsFoundInDatabase = true;
+                    pr.IsFoundInDatabase = 0;
 
                     TypesDetail tmpDetails = sdContext.TypesDetails.SingleOrDefault(x => x.Id == (int)tmpPr.TypeDetailsId);
                     pr.ProductType = tmpDetails.Description;
@@ -85,7 +85,7 @@ namespace Boozic.Repositories
                     }
                     pr.CheapestStore = getCheapestStore(pr.ProductId, latitude, longitude);
                     pr.ClosestStore = getClosestStore(pr.ProductId, latitude, longitude);
-                    pr.IsFoundInDatabase = true;
+                    pr.IsFoundInDatabase = 0;
                     if (pr.ClosestStore.StoreID > 0 && pr.CheapestStore.StoreID >0 && pr.ClosestStore.StoreID == pr.CheapestStore.StoreID)
                         pr.IsClosestStoreAndCheapestStoreSame = true;
                     else
@@ -93,7 +93,7 @@ namespace Boozic.Repositories
                 }
                 else
                 {
-                    pr.IsFoundInDatabase = false;
+                    pr.IsFoundInDatabase = 1;
                 }
                 return pr;
             }
@@ -134,7 +134,7 @@ namespace Boozic.Repositories
                 tmpProductInfo.VolumeUnit = p.VolumeUnit;
                 tmpProductInfo.ContainerType = p.ContainerType;
                 tmpProductInfo.ABV = (double)p.ABV.GetValueOrDefault();
-                tmpProductInfo.IsFoundInDatabase = true;
+                tmpProductInfo.IsFoundInDatabase = 0;
 
                 TypesDetail tmpDetails = sdContext.TypesDetails.SingleOrDefault(x => x.Id == (int)p.TypeDetailsId);
                 tmpProductInfo.ProductType = tmpDetails.Description;

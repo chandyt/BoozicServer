@@ -15,20 +15,20 @@ namespace Boozic.Models
         public ProductInfo()
         { }
 
-        int productId;
+        int productId=-1;
         string productName;
-        int productTypeId;
+        int productTypeId=-1;
         string productType;
-        double abv=0;
+        double abv=-1;
         string upc;
         string volumeUnit;
-        double volume=0;
-        bool isFoundInDatabase=true;
+        double volume=-1;
+        int isFoundInDatabase=0;
         StorePrice cheapestStore;
         StorePrice closestStore;
         int rating1, rating2, rating3, rating4, rating5;
-        double combinedRating;
-        int productParentTypeId;
+        double combinedRating=-1;
+        int productParentTypeId=-1;
         string productParentType;
         string containerType;
         bool isClosestStoreAndCheapestStoreSame;
@@ -114,7 +114,7 @@ namespace Boozic.Models
         }
 
         [JsonProperty(PropertyName = "IsFoundInDatabase")]
-        public bool IsFoundInDatabase
+        public int IsFoundInDatabase
         {
             get { return isFoundInDatabase; }
             set { isFoundInDatabase = value; }
