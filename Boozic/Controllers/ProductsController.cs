@@ -93,7 +93,7 @@ namespace Boozic.Controllers
 
 
         [HttpGet]
-        public IHttpActionResult updateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int Rating)
+        public IHttpActionResult updateProduct(int ProductId, int StoreId = -1, double Price=-1, double ABV=-1, double Volume=-1, string VolumeUnit="-1", string ContainerType="-1", string DeviceId="-1", int Rating=-1)
         {
 
             string UpdateStatus =  productService.UpdateProduct( ProductId,  StoreId,  Price,  ABV,  Volume,  VolumeUnit,  ContainerType,  DeviceId,  Rating);

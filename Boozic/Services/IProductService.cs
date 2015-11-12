@@ -18,7 +18,7 @@ namespace Boozic.Services
                                     double HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, double LowestABV = 0, double HighestABV = 100,
                                      int SortOption = 0, bool SortByCheapestStorePrice = false);
 
-        String UpdateProduct(int ProductId, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId, int rating);
+        String UpdateProduct(int ProductId, int StoreId = -1, double Price = -1, double ABV = -1, double Volume = -1, string VolumeUnit = "-1", string ContainerType = "-1", string DeviceId = "-1", int Rating = -1);
 
         String InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0);
     }
