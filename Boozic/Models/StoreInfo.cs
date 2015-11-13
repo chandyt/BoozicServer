@@ -12,6 +12,16 @@ namespace Boozic.Models
     public class StoreInfo
     {
 
+        public StoreInfo(Store aStore)
+        {
+            this.Latitude =(double) aStore.Latitude;
+            this.Longitude =(double) aStore.Longitude;
+            this.StoreAddress = aStore.Address;
+            this.StoreID = aStore.Id;
+            this.StoreName = aStore.StoreName;
+        }
+        public StoreInfo()
+        { }
         int storeID;
         string storeName;
         string storeAddress;
@@ -59,7 +69,7 @@ namespace Boozic.Models
         /// Distance in Meters
         /// 
         /// </summary>
-        [JsonProperty(PropertyName = "DistanceInMeters")]
+        [JsonProperty(PropertyName = "DistanceInMiles")]
         public double Distance
         {
             get { return distance; }
@@ -69,19 +79,19 @@ namespace Boozic.Models
         /// <summary>
         /// Duration in Seconds
         /// </summary>
-        [JsonProperty(PropertyName = "DurationInSeconds")]
-        public double Duration
-        {
-            get { return duration; }
-            set { duration = value; }
-        }
+        //[JsonProperty(PropertyName = "DurationInSeconds")]
+        //public double Duration
+        //{
+        //    get { return duration; }
+        //    set { duration = value; }
+        //}
 
-        [JsonProperty(PropertyName = "IsOpenNow")]
-        public bool IsOpenNow
-        {
-            get { return isOpenNow; }
-            set { isOpenNow = value; }
-        }
+        //[JsonProperty(PropertyName = "IsOpenNow")]
+        //public bool IsOpenNow
+        //{
+        //    get { return isOpenNow; }
+        //    set { isOpenNow = value; }
+        //}
 
     }
 

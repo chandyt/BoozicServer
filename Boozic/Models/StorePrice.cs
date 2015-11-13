@@ -17,8 +17,8 @@ namespace Boozic.Models
         public StorePrice(StoreInfo aStoreInfo)
         {
             this.Distance = aStoreInfo.Distance;
-            this.Duration = aStoreInfo.Duration;
-            this.IsOpenNow = aStoreInfo.IsOpenNow;
+            //this.Duration = aStoreInfo.Duration;
+            //this.IsOpenNow = aStoreInfo.IsOpenNow;
             this.Latitude = aStoreInfo.Latitude;
             this.Longitude = aStoreInfo.Longitude;
             this.StoreAddress = aStoreInfo.StoreAddress;
@@ -82,22 +82,22 @@ namespace Boozic.Models
             set { distance = value; }
         }
 
-        /// <summary>
-        /// Duration in Seconds
-        /// </summary>
-        [JsonProperty(PropertyName = "DurationInSeconds")]
-        public double Duration
-        {
-            get { return duration; }
-            set { duration = value; }
-        }
+        ///// <summary>
+        ///// Duration in Seconds
+        ///// </summary>
+        //[JsonProperty(PropertyName = "DurationInSeconds")]
+        //public double Duration
+        //{
+        //    get { return duration; }
+        //    set { duration = value; }
+        //}
 
-        [JsonProperty(PropertyName = "IsOpenNow")]
-        public bool IsOpenNow
-        {
-            get { return isOpenNow; }
-            set { isOpenNow = value; }
-        }
+        //[JsonProperty(PropertyName = "IsOpenNow")]
+        //public bool IsOpenNow
+        //{
+        //    get { return isOpenNow; }
+        //    set { isOpenNow = value; }
+        //}
         public double Price
         {
             get { return price; }

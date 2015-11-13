@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using Boozic.Services;
+using Boozic.Models;
+using System.ComponentModel;
 
 namespace Boozic.Repositories
 {
@@ -34,5 +37,26 @@ namespace Boozic.Repositories
         {
             return sdContext.Stores;
         }
+
+          public List<StoreInfo> getStoresInRadius(double CurrentLatitude, double CurrentLongitude, double Radius)
+          {
+              List<Store> lstStores = GetAll().ToList();
+              List<StoreInfo> lstSI = new List<StoreInfo>();
+               LocationService ls = new LocationService();
+              foreach (Store st in lstStores)
+              {
+                  double Distance = ls.distance(CurrentLatitude, CurrentLongitude, (double)st.Latitude, (double)st.Longitude);
+                  if (Distance<= Radius)
+                  {
+                      StoreInfo SI = new StoreInfo(st);
+                      SI.Distance = Distance;
+                      lstSI.Add(SI);
+                  }
+                  
+              }
+
+              return lstSI;
+          
+          }
     }
 }

@@ -18,6 +18,7 @@ namespace Boozic.Controllers
     public class LocationController : ApiController
     {
         private readonly ILocationService locationService;
+        private readonly IStoreService storeService;
         /// <summary>
         /// API function for getting the Liquor store where the User is
         /// </summary>
@@ -28,15 +29,18 @@ namespace Boozic.Controllers
         public LocationController()
         {
             locationService = new LocationService();
-            
+            storeService = new StoreService(new StoreRepository(new BoozicEntities()));
         }
+
+
 
         [HttpGet]
         public IHttpActionResult getStoreInfo(double Latitude, double Longitude)
         {
             StoreInfo SI=new StoreInfo();
             List<StoreInfo> lstSI = new List<StoreInfo>();
-            lstSI = locationService.getStores(Latitude, Longitude, 0.2); // Radius is ~150 feet. to accomadate if the user in parking lots...
+            //lstSI = locationService.getStores(Latitude, Longitude, 0.2); // Radius is ~150 feet. to accomadate if the user in parking lots...
+            lstSI = storeService.getStoresInRadius(Latitude, Longitude, 0.2); // Radius is ~150 feet. to accomadate if the user in parking lots...
             //TODO:Insert into stores table
             if (lstSI.Count > 0)
                 SI = lstSI[0];
@@ -52,11 +56,12 @@ namespace Boozic.Controllers
         /// <param name="Radius">Radius in Miles</param>
         /// <returns>XML data about the stores</returns>
          [HttpGet]
-        public IHttpActionResult getStoresInRadius(double Latitude, double Longitude, int Radius)
+        public IHttpActionResult getStoresInRadius(double Latitude, double Longitude, double Radius)
         {
 
             List<StoreInfo> lstSI = new List<StoreInfo>();
-            lstSI = locationService.getStores(Latitude, Longitude, Radius);
+            //lstSI = locationService.getStores(Latitude, Longitude, Radius);
+            lstSI = storeService.getStoresInRadius(Latitude, Longitude, Radius);
             //TODO: Insert into stores table
             return Ok(lstSI);
         }

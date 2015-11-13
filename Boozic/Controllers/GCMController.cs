@@ -60,6 +60,11 @@ namespace Boozic.Controllers
             gcmService.SendNotification(Message);
             return Ok();
         }
-        
+
+        [HttpGet]
+        public IHttpActionResult SendEmail(string EmailBody)
+        {
+            return Ok(gcmService.SendEmail(EmailBody));
+        }
     }
 }

@@ -111,7 +111,7 @@ namespace Boozic.Repositories
 
         public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, double LowestPrice = 0,
                               double HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, double LowestABV = 0, double HighestABV = 100,
-                               int SortOption = 0, bool SortByCheapestStorePrice = false)
+                               int SortOption = 0, bool SortByCheapestStorePrice = false, string DeviceId = "-1")
         {
 
             List<Product> lstProducts = sdContext.Products.ToList();
@@ -161,6 +161,14 @@ namespace Boozic.Repositories
                     tmpProductInfo.Rating4 = 0;
                     tmpProductInfo.Rating5 = 0;
                     tmpProductInfo.CombinedRating = 0;
+                }
+
+                if (DeviceId != "-1")
+                {
+                    UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)p.Id && x.DeviceId == DeviceId);
+                    if (aUserProductRating != null)
+                        tmpProductInfo.RatingByCurrentUser = (int)aUserProductRating.Rating;
+                    
                 }
 
                 tmpProductInfo.CheapestStore = getCheapestStore((int)p.Id, latitude, longitude);
@@ -261,7 +269,7 @@ namespace Boozic.Repositories
         {
             List<Boozic.ProductsPrice> lstTemp = sdContext.ProductsPrices.ToList().FindAll(delegate(Boozic.ProductsPrice s) { return s.ProductId == ProductId; }).ToList();
             StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
-            //LocationService ls = new LocationService();
+            LocationService ls = new LocationService();
             lstTemp = lstTemp.OrderBy(o => o.Price).ToList();
             Models.StorePrice st = new Models.StorePrice();
             if (lstTemp.Count >= 1)
@@ -278,7 +286,7 @@ namespace Boozic.Repositories
                 st.LastUpdated = Convert.ToDateTime(lstTemp[0].LastUpdated).ToString("MM/dd/yy");
                 st.StoreID = lstTemp[0].StoreID;
 
-                double tmpDistance = distance(SourceLatitude, SourceLongitude, (double)cheapestStore.Latitude, (double)cheapestStore.Longitude);
+                double tmpDistance = ls.distance(SourceLatitude, SourceLongitude, (double)cheapestStore.Latitude, (double)cheapestStore.Longitude);
                 st.Distance = tmpDistance;
 
             }
@@ -290,7 +298,7 @@ namespace Boozic.Repositories
         {
             List<Boozic.ProductsPrice> lstTemp = sdContext.ProductsPrices.ToList().FindAll(delegate(Boozic.ProductsPrice s) { return s.ProductId == ProductId; }).ToList();
             StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
-            // LocationService ls = new LocationService();
+             LocationService ls = new LocationService();
 
             int closestStoreId = 0;
             double DistanceFromCurrentLocation = 9999999;
@@ -304,7 +312,7 @@ namespace Boozic.Repositories
 
 
 
-                double tmpDistance = distance(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
+                double tmpDistance = ls.distance(SourceLatitude, SourceLongitude, (double)tmpStore.Latitude, (double)tmpStore.Longitude);
 
                 if (tmpDistance < DistanceFromCurrentLocation)
                 {
@@ -344,7 +352,7 @@ namespace Boozic.Repositories
         //    }
         //}
 
-        public String UpdateProduct(int ProductId, int StoreId = -1, double Price = -1, double ABV = -1, double Volume = -1, string VolumeUnit = "-1", string ContainerType = "-1", string DeviceId = "-1", int Rating = -1)
+        public String UpdateProduct(int ProductId, int StoreId = -1, double Price = -1, string ProductName = "-1", int ProductTypeId = -1, double ABV = -1, double Volume = -1, string VolumeUnit = "-1", string ContainerType = "-1", string DeviceId = "-1", int Rating = -1)
         {
             String returnMessage = "Completed Succesfully";
             try
@@ -359,14 +367,27 @@ namespace Boozic.Repositories
                     aProduct.VolumeUnit = VolumeUnit;
                 if (ContainerType != "-1")
                     aProduct.ContainerType = ContainerType;
+                if (ProductName != "-1")
+                    aProduct.Name = ProductName;
+                if (ProductTypeId > -1)
+                    aProduct.TypeDetailsId = ProductTypeId;
 
                 if (StoreId > -1 & Price > -1)
                 {
-                    ProductsPrice aProductPrice = sdContext.ProductsPrices.SingleOrDefault(x => x.Id == (int)ProductId && x.StoreID == (int)StoreId);
+                    ProductsPrice aProductPrice = sdContext.ProductsPrices.SingleOrDefault(x => x.ProductId == (int)ProductId && x.StoreID == (int)StoreId);
                     if (aProductPrice != null)
                     {
                         aProductPrice.Price = (decimal)Price;
                         aProductPrice.LastUpdated = DateTime.Now;
+                    }
+                    else
+                    {
+                        ProductsPrice tmpProductPrice = new ProductsPrice(); ;
+                        tmpProductPrice.ProductId = ProductId;
+                        tmpProductPrice.StoreID = StoreId;
+                        tmpProductPrice.Price = (decimal)Price;
+                        tmpProductPrice.LastUpdated = DateTime.Now;
+                        sdContext.ProductsPrices.Add(tmpProductPrice);
                     }
                 }
 
@@ -404,6 +425,14 @@ namespace Boozic.Repositories
                     else
                     {
                         aProductRating = new ProductRating();
+                        aProductRating.ProductId = ProductId;
+                        aProductRating.Rating1 = 0;
+                        aProductRating.Rating2 = 0;
+                        aProductRating.Rating3 = 0;
+                        aProductRating.Rating4 = 0;
+                        aProductRating.Rating5 = 0;
+                        aProductRating.CombinedRating = 0;
+
                         if (Rating == 1)
                             aProductRating.Rating1 = 1;
                         if (Rating == 2)
@@ -433,97 +462,77 @@ namespace Boozic.Repositories
         }
 
 
-        public String InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
-        {
-            String returnMessage = "Completed Succesfully";
-            try
-            {
-                Product aProduct = new Product();
-                aProduct.ABV = (decimal)ABV;
-                aProduct.Volume = (decimal)Volume;
-                aProduct.VolumeUnit = VolumeUnit;
-                aProduct.ContainerType = ContainerType;
-                aProduct.UPC = UPC;
-                aProduct.Name = ProductName;
-                aProduct.TypeDetailsId = ProductTypeID;
-                sdContext.Products.Add(aProduct);
-                sdContext.SaveChanges();
-                int ProductId = aProduct.Id;
+        //public String InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
+        //{
+        //    String returnMessage = "Completed Succesfully";
+        //    try
+        //    {
+        //        Product aProduct = new Product();
+        //        aProduct.ABV = (decimal)ABV;
+        //        aProduct.Volume = (decimal)Volume;
+        //        aProduct.VolumeUnit = VolumeUnit;
+        //        aProduct.ContainerType = ContainerType;
+        //        aProduct.UPC = UPC;
+        //        aProduct.Name = ProductName;
+        //        aProduct.TypeDetailsId = ProductTypeID;
+        //        sdContext.Products.Add(aProduct);
+        //        sdContext.SaveChanges();
+        //        int ProductId = aProduct.Id;
 
-                ProductsPrice aProductPrice = new ProductsPrice(); ;
-                aProductPrice.ProductId = ProductId;
-                aProductPrice.StoreID = StoreId;
-                aProductPrice.Price = (decimal)Price;
-                aProductPrice.LastUpdated = DateTime.Now;
-                sdContext.ProductsPrices.Add(aProductPrice);
+        //        ProductsPrice aProductPrice = new ProductsPrice(); ;
+        //        aProductPrice.ProductId = ProductId;
+        //        aProductPrice.StoreID = StoreId;
+        //        aProductPrice.Price = (decimal)Price;
+        //        aProductPrice.LastUpdated = DateTime.Now;
+        //        sdContext.ProductsPrices.Add(aProductPrice);
 
-                if (DeviceId != "")
-                {
-                    UserProductRating aUserProductRating = aUserProductRating = new UserProductRating();
-                    aUserProductRating.DeviceId = DeviceId;
-                    aUserProductRating.Rating = Rating;
-                    aUserProductRating.ProductId = ProductId;
-                    sdContext.UserProductRatings.Add(aUserProductRating);
+        //        if (DeviceId != "")
+        //        {
+        //            UserProductRating aUserProductRating = aUserProductRating = new UserProductRating();
+        //            aUserProductRating.DeviceId = DeviceId;
+        //            aUserProductRating.Rating = Rating;
+        //            aUserProductRating.ProductId = ProductId;
+        //            sdContext.UserProductRatings.Add(aUserProductRating);
 
-                    ProductRating aProductRating = new ProductRating();
-                    aProductRating.ProductId = ProductId;
+        //            ProductRating aProductRating = new ProductRating();
+        //            aProductRating.ProductId = ProductId;
 
-                    aProductRating.Rating1 = 0;
-                    aProductRating.Rating2 = 0;
-                    aProductRating.Rating3 = 0;
-                    aProductRating.Rating4 = 0;
-                    aProductRating.Rating5 = 0;
-                    aProductRating.CombinedRating = 0;
+        //            aProductRating.Rating1 = 0;
+        //            aProductRating.Rating2 = 0;
+        //            aProductRating.Rating3 = 0;
+        //            aProductRating.Rating4 = 0;
+        //            aProductRating.Rating5 = 0;
+        //            aProductRating.CombinedRating = 0;
 
-                    if (Rating == 1)
-                        aProductRating.Rating1 = 1;
-                    if (Rating == 2)
-                        aProductRating.Rating2 = 1;
-                    if (Rating == 3)
-                        aProductRating.Rating3 = 1;
-                    if (Rating == 4)
-                        aProductRating.Rating4 = 1;
-                    if (Rating == 5)
-                        aProductRating.Rating5 = 1;
+        //            if (Rating == 1)
+        //                aProductRating.Rating1 = 1;
+        //            if (Rating == 2)
+        //                aProductRating.Rating2 = 1;
+        //            if (Rating == 3)
+        //                aProductRating.Rating3 = 1;
+        //            if (Rating == 4)
+        //                aProductRating.Rating4 = 1;
+        //            if (Rating == 5)
+        //                aProductRating.Rating5 = 1;
 
-                    aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
-                    sdContext.ProductRatings.Add(aProductRating);
+        //            aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
+        //            sdContext.ProductRatings.Add(aProductRating);
 
-                }
+        //        }
 
-                sdContext.SaveChanges();
-
-
-            }
-            catch (Exception ex)
-            {
-                returnMessage = ex.Message;
-            }
-            return returnMessage;
-        }
+        //        sdContext.SaveChanges();
 
 
-        private double distance(double lat1, double lon1, double lat2, double lon2)
-        {
-            double theta = lon1 - lon2;
-            double dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) + Math.Cos(deg2rad(lat1)) * Math.Cos(deg2rad(lat2)) * Math.Cos(deg2rad(theta));
-            dist = Math.Acos(dist);
-            dist = rad2deg(dist);
-            dist = dist * 60 * 1.1515;
-            return (Math.Round(dist, 2));
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        returnMessage = ex.Message;
+        //    }
+        //    return returnMessage;
+        //}
 
 
-        private double deg2rad(double deg)
-        {
-            return (deg * Math.PI / 180.0);
-        }
 
-
-        private double rad2deg(double rad)
-        {
-            return (rad / Math.PI * 180.0);
-        }
 
 
         private double findAverageRating(int rating1, int rating2, int rating3, int rating4, int rating5)
@@ -533,5 +542,31 @@ namespace Boozic.Repositories
 
             return Math.Round((wTotal / total), 2);
         }
+
+
+         public Dictionary<int,string> getParentTypes()
+        {
+            Dictionary<int, string> ty = new Dictionary<int, string>();
+            List<Type> tmp=sdContext.Types.ToList();
+            foreach (Type t in tmp)
+            {
+                ty.Add(t.Id, t.Type1);
+            }
+            return ty;
+         }
+
+
+         public Dictionary<int, string> getProductTypes(int ParentId)
+         {
+             Dictionary<int, string> ty = new Dictionary<int, string>();
+             List<TypesDetail> tmp = sdContext.TypesDetails.ToList().FindAll(delegate(TypesDetail s) { return s.ParentId == ParentId; });
+             foreach (TypesDetail t in tmp)
+             {
+                 ty.Add(t.Id, t.Description);
+             }
+             return ty;
+
+         
+         }
     }
 }

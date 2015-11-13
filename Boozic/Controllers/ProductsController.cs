@@ -83,28 +83,43 @@ namespace Boozic.Controllers
         [HttpGet]
         public IHttpActionResult getProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, double LowestPrice = 0,
                                     double HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, double LowestABV=0, double HighestABV=100,
-                                    int SortOption = 0, bool SortByCheapestStorePrice = false)
+                                    int SortOption = 0, bool SortByCheapestStorePrice = false, string DeviceId="-1")
         {
 
             List<Models.ProductInfo> products = productService.filterProducts(latitude, longitude, ProductTypeId, ProductParentTypeId, Radius, LowestPrice, HighestPrice,
-                                      LowestRating, HighestRating, LowestABV, HighestABV, SortOption, SortByCheapestStorePrice);
+                                      LowestRating, HighestRating, LowestABV, HighestABV, SortOption, SortByCheapestStorePrice, DeviceId);
             return Ok(products);
         }
 
 
         [HttpGet]
-        public IHttpActionResult updateProduct(int ProductId, int StoreId = -1, double Price=-1, double ABV=-1, double Volume=-1, string VolumeUnit="-1", string ContainerType="-1", string DeviceId="-1", int Rating=-1)
+        public IHttpActionResult updateProduct(int ProductId, int StoreId = -1, double Price=-1, string ProductName="-1", int ProductTypeId=-1, double ABV=-1, double Volume=-1, string VolumeUnit="-1", string ContainerType="-1", string DeviceId="-1", int Rating=-1)
         {
 
-            string UpdateStatus =  productService.UpdateProduct( ProductId,  StoreId,  Price,  ABV,  Volume,  VolumeUnit,  ContainerType,  DeviceId,  Rating);
+            string UpdateStatus = productService.UpdateProduct(ProductId, StoreId, Price, ProductName, ProductTypeId, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
             return Ok(UpdateStatus);
         }
 
+        //[HttpGet]
+        //public IHttpActionResult InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
+        //{
+        //    string InsertStatus = productService.InsertProduct(UPC,ProductName,   ProductTypeID,StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
+        //    return Ok(InsertStatus);
+        //}
+
         [HttpGet]
-        public IHttpActionResult InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
+        public IHttpActionResult getParentTypes()
         {
-            string InsertStatus = productService.InsertProduct(UPC,ProductName,   ProductTypeID,StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
-            return Ok(InsertStatus);
+            Dictionary<int,string> ty = productService.getParentTypes();
+
+            return Ok(ty);
+        }
+
+        [HttpGet]
+        public IHttpActionResult getProductTypes(int ParentId)
+        {
+            Dictionary<int, string> ty = productService.getProductTypes(ParentId);
+            return Ok(ty);
         }
     }
 }

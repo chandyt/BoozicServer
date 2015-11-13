@@ -65,8 +65,8 @@ namespace Boozic.Services
                     si.StoreAddress = json["results"][i]["vicinity"].Value<string>();
 
                     JToken hours = json["results"][i]["opening_hours"];
-                    if (hours != null)
-                        si.IsOpenNow = hours["open_now"].Value<bool>();
+                    //if (hours != null)
+                       // si.IsOpenNow = hours["open_now"].Value<bool>();
 
                     // Generating parameters for Google Matrix API to find the distance and the duration
                     //NameValueCollection GM_Details = new NameValueCollection();
@@ -95,7 +95,8 @@ namespace Boozic.Services
                     //}
                     Dictionary<String, Double> distanceResult = getDistanceAndTime(Latitude, Longitude, si.Latitude, si.Longitude);
                     si.Distance = distanceResult["Distance"];
-                    si.Duration = distanceResult["Duration"];
+                    
+                    //si.Duration = distanceResult["Duration"];
 
                     lstSI.Add(si);
                 }
@@ -151,6 +152,28 @@ namespace Boozic.Services
                 }
             }
             return Result;
+        }
+
+        public double distance(double lat1, double lon1, double lat2, double lon2)
+        {
+            double theta = lon1 - lon2;
+            double dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) + Math.Cos(deg2rad(lat1)) * Math.Cos(deg2rad(lat2)) * Math.Cos(deg2rad(theta));
+            dist = Math.Acos(dist);
+            dist = rad2deg(dist);
+            dist = dist * 60 * 1.1515;
+            return (Math.Round(dist, 2));
+        }
+
+
+        private double deg2rad(double deg)
+        {
+            return (deg * Math.PI / 180.0);
+        }
+
+
+        private double rad2deg(double rad)
+        {
+            return (rad / Math.PI * 180.0);
         }
     }
 }

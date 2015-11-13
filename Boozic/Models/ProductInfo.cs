@@ -9,26 +9,27 @@ namespace Boozic.Models
     /// <summary>
     /// This is the modal class that stores the stores data and returned to the users
     /// </summary>
-    public class ProductInfo 
+    public class ProductInfo
     {
 
         public ProductInfo()
         { }
 
-        int productId=-1;
+        int productId = -1;
         string productName;
-        int productTypeId=-1;
+        int productTypeId = -1;
         string productType;
-        double abv=-1;
+        double abv = -1;
         string upc;
         string volumeUnit;
-        double volume=-1;
-        int isFoundInDatabase=0;
+        double volume = -1;
+        int isFoundInDatabase = 0;
         StorePrice cheapestStore;
         StorePrice closestStore;
         int rating1, rating2, rating3, rating4, rating5;
-        double combinedRating=-1;
-        int productParentTypeId=-1;
+        double combinedRating = -1;
+        int ratingByCurrentUser = -1;
+        int productParentTypeId = -1;
         string productParentType;
         string containerType;
         bool isClosestStoreAndCheapestStoreSame;
@@ -100,7 +101,8 @@ namespace Boozic.Models
         [JsonProperty(PropertyName = "Volume")]
         public double Volume
         {
-            get {
+            get
+            {
                 return volume;
             }
             set { volume = value; }
@@ -176,10 +178,18 @@ namespace Boozic.Models
             set { combinedRating = value; }
         }
 
+        [JsonProperty(PropertyName = "RatingByCurrentUser")]
+        public int RatingByCurrentUser
+        {
+            get { return ratingByCurrentUser; }
+            set { ratingByCurrentUser = value; }
+        }
+
+
         [JsonProperty(PropertyName = "IsClosestStoreAndCheapestStoreSame")]
         public Boolean IsClosestStoreAndCheapestStoreSame
         {
-            get {return isClosestStoreAndCheapestStoreSame;}
+            get { return isClosestStoreAndCheapestStoreSame; }
             set { isClosestStoreAndCheapestStoreSame = value; }
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Boozic.Repositories;
+using Boozic.Models;
 
 namespace Boozic.Services
 {
@@ -20,6 +21,11 @@ namespace Boozic.Services
         public IEnumerable<Store> GetAll()
         {
             return repository.GetAll();
+        }
+
+        public List<StoreInfo> getStoresInRadius(double CurrentLatitude, double CurrentLongitude, double Radius)
+        {
+            return repository.getStoresInRadius(CurrentLatitude, CurrentLongitude, Radius);
         }
     }
 }
