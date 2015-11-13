@@ -145,10 +145,18 @@ namespace Boozic.Services
            return repository.getParentTypes();
          }
 
-
+        public List<Models.ProductInfo> getFavourites(string DeviceId, double latitude, double longitude)
+        {
+           return repository.getFavourites(DeviceId, latitude, longitude);
+        }
         public Dictionary<int, string> getProductTypes(int ParentId)
          {
              return repository.getProductTypes(ParentId);
          }
+
+        public String addToFavourites(string DeviceId, int ProductId)
+        {
+            return repository.addToFavourites(DeviceId, ProductId);
+        }
     }
 }

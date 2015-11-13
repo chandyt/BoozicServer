@@ -15,7 +15,7 @@ namespace Boozic
     public partial class UserFavourite
     {
         public int Id { get; set; }
-        public byte[] DeviceId { get; set; }
+        public string DeviceId { get; set; }
         public Nullable<int> ProductId { get; set; }
     
         public virtual Product Product { get; set; }

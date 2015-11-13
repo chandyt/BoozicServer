@@ -25,5 +25,9 @@ namespace Boozic.Services
         Dictionary<int, string> getParentTypes();
 
         Dictionary<int, string> getProductTypes(int ParentTypeId);
+
+        List<Models.ProductInfo> getFavourites(string DeviceId, double latitude, double longitude);
+
+        String addToFavourites(string DeviceId, int ProductId);
     }
 }

@@ -108,7 +108,6 @@ namespace Boozic.Repositories
 
         }
 
-
         public List<Models.ProductInfo> filterProducts(double latitude, double longitude, int ProductTypeId = 0, int ProductParentTypeId = 0, int Radius = 2, double LowestPrice = 0,
                               double HighestPrice = 9999999, int LowestRating = 0, int HighestRating = 5, double LowestABV = 0, double HighestABV = 100,
                                int SortOption = 0, bool SortByCheapestStorePrice = false, string DeviceId = "-1")
@@ -168,7 +167,7 @@ namespace Boozic.Repositories
                     UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)p.Id && x.DeviceId == DeviceId);
                     if (aUserProductRating != null)
                         tmpProductInfo.RatingByCurrentUser = (int)aUserProductRating.Rating;
-                    
+
                 }
 
                 tmpProductInfo.CheapestStore = getCheapestStore((int)p.Id, latitude, longitude);
@@ -293,12 +292,11 @@ namespace Boozic.Repositories
             return st;
         }
 
-
         private Models.StorePrice getClosestStore(int ProductId, double SourceLatitude, double SourceLongitude)
         {
             List<Boozic.ProductsPrice> lstTemp = sdContext.ProductsPrices.ToList().FindAll(delegate(Boozic.ProductsPrice s) { return s.ProductId == ProductId; }).ToList();
             StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
-             LocationService ls = new LocationService();
+            LocationService ls = new LocationService();
 
             int closestStoreId = 0;
             double DistanceFromCurrentLocation = 9999999;
@@ -342,7 +340,6 @@ namespace Boozic.Repositories
 
             return st;
         }
-
 
         //static void CopyProperties(object dest, object src)
         //{
@@ -461,7 +458,6 @@ namespace Boozic.Repositories
             return returnMessage;
         }
 
-
         //public String InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
         //{
         //    String returnMessage = "Completed Succesfully";
@@ -531,10 +527,6 @@ namespace Boozic.Repositories
         //    return returnMessage;
         //}
 
-
-
-
-
         private double findAverageRating(int rating1, int rating2, int rating3, int rating4, int rating5)
         {
             double wTotal = rating1 * 1 + rating2 * 2 + rating3 * 3 + rating4 * 4 + rating5 * 5;
@@ -543,30 +535,123 @@ namespace Boozic.Repositories
             return Math.Round((wTotal / total), 2);
         }
 
-
-         public Dictionary<int,string> getParentTypes()
+        public Dictionary<int, string> getParentTypes()
         {
             Dictionary<int, string> ty = new Dictionary<int, string>();
-            List<Type> tmp=sdContext.Types.ToList();
+            List<Type> tmp = sdContext.Types.ToList();
             foreach (Type t in tmp)
             {
                 ty.Add(t.Id, t.Type1);
             }
             return ty;
-         }
+        }
+
+        public Dictionary<int, string> getProductTypes(int ParentId)
+        {
+            Dictionary<int, string> ty = new Dictionary<int, string>();
+            List<TypesDetail> tmp = sdContext.TypesDetails.ToList().FindAll(delegate(TypesDetail s) { return s.ParentId == ParentId; });
+            foreach (TypesDetail t in tmp)
+            {
+                ty.Add(t.Id, t.Description);
+            }
+            return ty;
 
 
-         public Dictionary<int, string> getProductTypes(int ParentId)
-         {
-             Dictionary<int, string> ty = new Dictionary<int, string>();
-             List<TypesDetail> tmp = sdContext.TypesDetails.ToList().FindAll(delegate(TypesDetail s) { return s.ParentId == ParentId; });
-             foreach (TypesDetail t in tmp)
-             {
-                 ty.Add(t.Id, t.Description);
-             }
-             return ty;
+        }
 
-         
-         }
+        public List<Models.ProductInfo> getFavourites(string DeviceId, double latitude, double longitude)
+        {
+            List<UserFavourite> lstFav = sdContext.UserFavourites.ToList().FindAll(delegate(UserFavourite s) { return s.DeviceId == DeviceId; });
+            List<Models.ProductInfo> lstProductInfo = new List<Models.ProductInfo>();
+            StoreService ss = new StoreService(new StoreRepository(new BoozicEntities()));
+
+            foreach (UserFavourite f in lstFav)
+            {
+                Product p = sdContext.Products.SingleOrDefault(x => x.Id == (int)f.ProductId);
+                Models.ProductInfo tmpProductInfo = new Models.ProductInfo();
+
+                tmpProductInfo.ProductId = p.Id;
+                tmpProductInfo.ProductName = p.Name;
+                tmpProductInfo.ProductTypeId = p.TypeDetailsId;
+                tmpProductInfo.UPC = p.UPC;
+                tmpProductInfo.Volume = (double)p.Volume.GetValueOrDefault();
+                tmpProductInfo.VolumeUnit = p.VolumeUnit;
+                tmpProductInfo.ContainerType = p.ContainerType;
+                tmpProductInfo.ABV = (double)p.ABV.GetValueOrDefault();
+                tmpProductInfo.IsFoundInDatabase = 0;
+
+                TypesDetail tmpDetails = sdContext.TypesDetails.SingleOrDefault(x => x.Id == (int)p.TypeDetailsId);
+                tmpProductInfo.ProductType = tmpDetails.Description;
+
+                Type tmpParentType = sdContext.Types.SingleOrDefault(x => x.Id == (int)tmpDetails.ParentId);
+                tmpProductInfo.ProductParentTypeId = tmpParentType.Id;
+                tmpProductInfo.ProductParentType = tmpParentType.Type1;
+
+                ProductRating tmpRating = sdContext.ProductRatings.SingleOrDefault(x => x.ProductId == (int)p.Id);
+                if (tmpRating != null)
+                {
+                    tmpProductInfo.Rating1 = (int)tmpRating.Rating1;
+                    tmpProductInfo.Rating2 = (int)tmpRating.Rating2;
+                    tmpProductInfo.Rating3 = (int)tmpRating.Rating3;
+                    tmpProductInfo.Rating4 = (int)tmpRating.Rating4;
+                    tmpProductInfo.Rating5 = (int)tmpRating.Rating5;
+                    tmpProductInfo.CombinedRating = (double)tmpRating.CombinedRating;
+                }
+                else
+                {
+                    tmpProductInfo.Rating1 = 0;
+                    tmpProductInfo.Rating2 = 0;
+                    tmpProductInfo.Rating3 = 0;
+                    tmpProductInfo.Rating4 = 0;
+                    tmpProductInfo.Rating5 = 0;
+                    tmpProductInfo.CombinedRating = 0;
+                }
+
+
+                UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)p.Id && x.DeviceId == DeviceId);
+                if (aUserProductRating != null)
+                    tmpProductInfo.RatingByCurrentUser = (int)aUserProductRating.Rating;
+
+
+
+                tmpProductInfo.CheapestStore = getCheapestStore((int)p.Id, latitude, longitude);
+                tmpProductInfo.ClosestStore = getClosestStore((int)p.Id, latitude, longitude);
+                if (tmpProductInfo.ClosestStore.StoreID > 0 && tmpProductInfo.CheapestStore.StoreID > 0 && tmpProductInfo.ClosestStore.StoreID == tmpProductInfo.CheapestStore.StoreID)
+                    tmpProductInfo.IsClosestStoreAndCheapestStoreSame = true;
+                else
+                    tmpProductInfo.IsClosestStoreAndCheapestStoreSame = false;
+                lstProductInfo.Add(tmpProductInfo);
+            }
+
+
+            //Default Radius =2 Miles
+            //lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CheapestStore.Distance <= Radius || s.ClosestStore.Distance <= Radius; });
+
+            return lstProductInfo;
+        }
+
+
+        public String addToFavourites(string DeviceId, int ProductId)
+        {
+            String returnMessage = "Completed Succesfully";
+            try
+            {
+                List<UserFavourite> lstFav = sdContext.UserFavourites.ToList().FindAll(delegate(UserFavourite s) { return s.DeviceId == DeviceId && s.ProductId==ProductId; });
+                if (lstFav.Count==0)
+                {
+                    UserFavourite f = new UserFavourite();
+                    f.ProductId = ProductId;
+                    f.DeviceId = DeviceId;
+                    sdContext.UserFavourites.Add(f);
+                    sdContext.SaveChanges();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                returnMessage = ex.Message;
+            }
+            return returnMessage;
+        }
     }
 }

@@ -121,5 +121,19 @@ namespace Boozic.Controllers
             Dictionary<int, string> ty = productService.getProductTypes(ParentId);
             return Ok(ty);
         }
+
+        [HttpGet]
+        public IHttpActionResult getFavourites(string DeviceId, double latitude, double longitude)
+        {
+            List<Models.ProductInfo> products= productService.getFavourites(DeviceId, latitude,longitude);
+            return Ok(products);
+        }
+
+        [HttpGet]
+        public IHttpActionResult addToFavourites(string DeviceId, int ProductId)
+        {
+            string status = productService.addToFavourites(DeviceId, ProductId);
+            return Ok(status);
+        }
     }
 }

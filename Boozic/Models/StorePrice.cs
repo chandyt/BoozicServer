@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace Boozic.Models
 {
@@ -33,8 +31,6 @@ namespace Boozic.Models
         string storeAddress;
         double latitude;
         double longitude;
-        bool isOpenNow;
-        double duration;
         double distance;
 
         [JsonProperty(PropertyName = "StoreID")]

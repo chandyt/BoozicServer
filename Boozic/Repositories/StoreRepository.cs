@@ -42,7 +42,7 @@ namespace Boozic.Repositories
           {
               List<Store> lstStores = GetAll().ToList();
               List<StoreInfo> lstSI = new List<StoreInfo>();
-               LocationService ls = new LocationService();
+              LocationService ls = new LocationService();
               foreach (Store st in lstStores)
               {
                   double Distance = ls.distance(CurrentLatitude, CurrentLongitude, (double)st.Latitude, (double)st.Longitude);
@@ -55,6 +55,22 @@ namespace Boozic.Repositories
                   
               }
 
+              // No stores found in the database; use google APIs to get data and store in db an send to client
+              if (lstSI.Count==0)
+              {
+                  List<StoreInfo> lstStoreFromAPI= ls.getStores( CurrentLatitude,  CurrentLongitude,  Radius);
+                  foreach (StoreInfo st in lstStoreFromAPI)
+                  {
+                      Store s = new Store();
+                      s.StoreName = st.StoreName;
+                      s.Address = st.StoreAddress;
+                      s.Latitude =(decimal) st.Latitude;
+                      s.Longitude =(decimal) st.Longitude;
+                      sdContext.Stores.Add(s);
+                      sdContext.SaveChanges();
+                  }
+                  lstSI = lstStoreFromAPI;
+              }
               return lstSI;
           
           }

@@ -27,8 +27,6 @@ namespace Boozic.Models
         string storeAddress;
         double latitude;
         double longitude;
-        bool isOpenNow;
-        double duration;
         double distance;
 
         [JsonProperty(PropertyName = "StoreID")]
