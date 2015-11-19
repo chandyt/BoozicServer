@@ -54,6 +54,7 @@ namespace Boozic.Repositories
                     pr.Volume = (double)tmpPr.Volume.GetValueOrDefault();
                     pr.VolumeUnit = tmpPr.VolumeUnit;
                     pr.ContainerType = tmpPr.ContainerType;
+                    pr.ContainerQty = (int)tmpPr.ContainerQty;
                     pr.ABV = (double)tmpPr.ABV.GetValueOrDefault();
                     pr.IsFoundInDatabase = 0;
 
@@ -132,6 +133,7 @@ namespace Boozic.Repositories
                 tmpProductInfo.Volume = (double)p.Volume.GetValueOrDefault();
                 tmpProductInfo.VolumeUnit = p.VolumeUnit;
                 tmpProductInfo.ContainerType = p.ContainerType;
+                tmpProductInfo.ContainerQty = (int)p.ContainerQty;
                 tmpProductInfo.ABV = (double)p.ABV.GetValueOrDefault();
                 tmpProductInfo.IsFoundInDatabase = 0;
 
@@ -167,6 +169,13 @@ namespace Boozic.Repositories
                     UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)p.Id && x.DeviceId == DeviceId);
                     if (aUserProductRating != null)
                         tmpProductInfo.RatingByCurrentUser = (int)aUserProductRating.Rating;
+
+                    UserFavourite aUserFavourite = sdContext.UserFavourites.SingleOrDefault(x => x.ProductId == (int)p.Id && x.DeviceId == DeviceId);
+                    if (aUserFavourite == null)
+                        tmpProductInfo.IsFavourite = 0;
+                    else
+                        tmpProductInfo.IsFavourite = 1;
+
 
                 }
 
@@ -349,7 +358,9 @@ namespace Boozic.Repositories
         //    }
         //}
 
-        public String UpdateProduct(int ProductId, int StoreId = -1, double Price = -1, string ProductName = "-1", int ProductTypeId = -1, double ABV = -1, double Volume = -1, string VolumeUnit = "-1", string ContainerType = "-1", string DeviceId = "-1", int Rating = -1)
+        public String UpdateProduct(int ProductId, int StoreId = -1, double Price = -1, string ProductName = "-1", int ProductTypeId = -1, double ABV = -1,
+                                    double Volume = -1, string VolumeUnit = "-1", string ContainerType = "-1", int ContainerQty = -1, string DeviceId = "-1",
+                                    int Rating = -1, int AddToFavouritesList = -1)
         {
             String returnMessage = "Completed Succesfully";
             try
@@ -364,6 +375,8 @@ namespace Boozic.Repositories
                     aProduct.VolumeUnit = VolumeUnit;
                 if (ContainerType != "-1")
                     aProduct.ContainerType = ContainerType;
+                if (ContainerQty != -1)
+                    aProduct.ContainerQty = ContainerQty;
                 if (ProductName != "-1")
                     aProduct.Name = ProductName;
                 if (ProductTypeId > -1)
@@ -444,6 +457,21 @@ namespace Boozic.Repositories
                         aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
                         sdContext.ProductRatings.Add(aProductRating);
                     }
+
+                    if (AddToFavouritesList == 1)
+                    {
+
+                        List<UserFavourite> lstFav = sdContext.UserFavourites.ToList().FindAll(delegate(UserFavourite s) { return s.DeviceId == DeviceId && s.ProductId == ProductId; });
+                        if (lstFav.Count == 0)
+                        {
+                            UserFavourite f = new UserFavourite();
+                            f.ProductId = ProductId;
+                            f.DeviceId = DeviceId;
+                            sdContext.UserFavourites.Add(f);
+                           
+                        }
+                    }
+
                 }
 
 
@@ -458,74 +486,6 @@ namespace Boozic.Repositories
             return returnMessage;
         }
 
-        //public String InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
-        //{
-        //    String returnMessage = "Completed Succesfully";
-        //    try
-        //    {
-        //        Product aProduct = new Product();
-        //        aProduct.ABV = (decimal)ABV;
-        //        aProduct.Volume = (decimal)Volume;
-        //        aProduct.VolumeUnit = VolumeUnit;
-        //        aProduct.ContainerType = ContainerType;
-        //        aProduct.UPC = UPC;
-        //        aProduct.Name = ProductName;
-        //        aProduct.TypeDetailsId = ProductTypeID;
-        //        sdContext.Products.Add(aProduct);
-        //        sdContext.SaveChanges();
-        //        int ProductId = aProduct.Id;
-
-        //        ProductsPrice aProductPrice = new ProductsPrice(); ;
-        //        aProductPrice.ProductId = ProductId;
-        //        aProductPrice.StoreID = StoreId;
-        //        aProductPrice.Price = (decimal)Price;
-        //        aProductPrice.LastUpdated = DateTime.Now;
-        //        sdContext.ProductsPrices.Add(aProductPrice);
-
-        //        if (DeviceId != "")
-        //        {
-        //            UserProductRating aUserProductRating = aUserProductRating = new UserProductRating();
-        //            aUserProductRating.DeviceId = DeviceId;
-        //            aUserProductRating.Rating = Rating;
-        //            aUserProductRating.ProductId = ProductId;
-        //            sdContext.UserProductRatings.Add(aUserProductRating);
-
-        //            ProductRating aProductRating = new ProductRating();
-        //            aProductRating.ProductId = ProductId;
-
-        //            aProductRating.Rating1 = 0;
-        //            aProductRating.Rating2 = 0;
-        //            aProductRating.Rating3 = 0;
-        //            aProductRating.Rating4 = 0;
-        //            aProductRating.Rating5 = 0;
-        //            aProductRating.CombinedRating = 0;
-
-        //            if (Rating == 1)
-        //                aProductRating.Rating1 = 1;
-        //            if (Rating == 2)
-        //                aProductRating.Rating2 = 1;
-        //            if (Rating == 3)
-        //                aProductRating.Rating3 = 1;
-        //            if (Rating == 4)
-        //                aProductRating.Rating4 = 1;
-        //            if (Rating == 5)
-        //                aProductRating.Rating5 = 1;
-
-        //            aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
-        //            sdContext.ProductRatings.Add(aProductRating);
-
-        //        }
-
-        //        sdContext.SaveChanges();
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        returnMessage = ex.Message;
-        //    }
-        //    return returnMessage;
-        //}
 
         private double findAverageRating(int rating1, int rating2, int rating3, int rating4, int rating5)
         {
@@ -577,6 +537,8 @@ namespace Boozic.Repositories
                 tmpProductInfo.Volume = (double)p.Volume.GetValueOrDefault();
                 tmpProductInfo.VolumeUnit = p.VolumeUnit;
                 tmpProductInfo.ContainerType = p.ContainerType;
+                tmpProductInfo.ContainerQty = (int)p.ContainerQty;
+
                 tmpProductInfo.ABV = (double)p.ABV.GetValueOrDefault();
                 tmpProductInfo.IsFoundInDatabase = 0;
 
@@ -636,8 +598,8 @@ namespace Boozic.Repositories
             String returnMessage = "Completed Succesfully";
             try
             {
-                List<UserFavourite> lstFav = sdContext.UserFavourites.ToList().FindAll(delegate(UserFavourite s) { return s.DeviceId == DeviceId && s.ProductId==ProductId; });
-                if (lstFav.Count==0)
+                List<UserFavourite> lstFav = sdContext.UserFavourites.ToList().FindAll(delegate(UserFavourite s) { return s.DeviceId == DeviceId && s.ProductId == ProductId; });
+                if (lstFav.Count == 0)
                 {
                     UserFavourite f = new UserFavourite();
                     f.ProductId = ProductId;
@@ -650,6 +612,32 @@ namespace Boozic.Repositories
             catch (Exception ex)
             {
                 returnMessage = ex.Message;
+            }
+            return returnMessage;
+        }
+
+        public String deleteFromFavourites(string DeviceId, string ProductIds)
+        {
+            String returnMessage = "Completed Succesfully";
+            string[] arrProductIds =ProductIds.Split(',');
+
+            for (int i = 0; i < arrProductIds.Length; i++)
+            {
+                try
+                {
+
+                    UserFavourite f = sdContext.UserFavourites.ToList().FirstOrDefault(s => s.DeviceId == DeviceId && s.ProductId == Convert.ToInt32(arrProductIds[i]));
+                    if (f != null)
+                    {
+                        sdContext.UserFavourites.Remove(f);
+                        sdContext.SaveChanges();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    returnMessage += ex.Message;
+                }
             }
             return returnMessage;
         }

@@ -29,6 +29,7 @@ namespace Boozic
         public string VolumeUnit { get; set; }
         public string ContainerType { get; set; }
         public int TypeDetailsId { get; set; }
+        public Nullable<int> ContainerQty { get; set; }
     
         public virtual ProductRating ProductRating { get; set; }
         public virtual ICollection<ProductsPrice> ProductsPrices { get; set; }

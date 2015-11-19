@@ -32,7 +32,9 @@ namespace Boozic.Models
         int productParentTypeId = -1;
         string productParentType;
         string containerType;
+        int containerQty;
         bool isClosestStoreAndCheapestStoreSame;
+        int isFavourite = 0;
 
         [JsonProperty(PropertyName = "ProductID")]
         public int ProductId
@@ -115,6 +117,14 @@ namespace Boozic.Models
             set { containerType = value; }
         }
 
+        [JsonProperty(PropertyName = "ContainerQty")]
+        public int ContainerQty
+        {
+            get { return containerQty; }
+            set { containerQty = value; }
+        }
+
+
         [JsonProperty(PropertyName = "IsFoundInDatabase")]
         public int IsFoundInDatabase
         {
@@ -193,7 +203,12 @@ namespace Boozic.Models
             set { isClosestStoreAndCheapestStoreSame = value; }
         }
 
-
+        [JsonProperty(PropertyName = "IsFavourite")]
+        public int IsFavourite
+        {
+            get { return isFavourite; }
+            set { isFavourite = value; }
+        }
 
 
     }

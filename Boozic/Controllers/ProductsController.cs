@@ -93,19 +93,13 @@ namespace Boozic.Controllers
 
 
         [HttpGet]
-        public IHttpActionResult updateProduct(int ProductId, int StoreId = -1, double Price=-1, string ProductName="-1", int ProductTypeId=-1, double ABV=-1, double Volume=-1, string VolumeUnit="-1", string ContainerType="-1", string DeviceId="-1", int Rating=-1)
+        public IHttpActionResult updateProduct(int ProductId, int StoreId = -1, double Price = -1, string ProductName = "-1", int ProductTypeId = -1, double ABV = -1, double Volume = -1, string VolumeUnit = "-1", string ContainerType = "-1", int ContainerQty= -1,  string DeviceId = "-1", int Rating = -1, int AddToFavouritesList = -1)
         {
 
-            string UpdateStatus = productService.UpdateProduct(ProductId, StoreId, Price, ProductName, ProductTypeId, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
+            string UpdateStatus = productService.UpdateProduct(ProductId, StoreId, Price, ProductName, ProductTypeId, ABV, Volume, VolumeUnit, ContainerType, ContainerQty, DeviceId, Rating, AddToFavouritesList);
             return Ok(UpdateStatus);
         }
 
-        //[HttpGet]
-        //public IHttpActionResult InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
-        //{
-        //    string InsertStatus = productService.InsertProduct(UPC,ProductName,   ProductTypeID,StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
-        //    return Ok(InsertStatus);
-        //}
 
         [HttpGet]
         public IHttpActionResult getParentTypes()
@@ -135,5 +129,13 @@ namespace Boozic.Controllers
             string status = productService.addToFavourites(DeviceId, ProductId);
             return Ok(status);
         }
+
+        [HttpGet]
+        public IHttpActionResult deleteFromFavourites(string DeviceId, string ProductIds)
+        {
+            string status = productService.deleteFromFavourites(DeviceId, ProductIds);
+            return Ok(status);
+        }
+
     }
 }

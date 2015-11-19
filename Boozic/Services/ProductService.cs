@@ -129,15 +129,13 @@ namespace Boozic.Services
                            LowestRating, HighestRating, LowestABV, HighestABV, SortOption, SortByCheapestStorePrice, DeviceId);
         }
 
-        public String UpdateProduct(int ProductId, int StoreId = -1, double Price = -1, string ProductName = "-1", int ProductTypeId = -1, double ABV = -1, double Volume = -1, string VolumeUnit = "-1", string ContainerType = "-1", string DeviceId = "-1", int Rating = -1)
+        public String UpdateProduct(int ProductId, int StoreId = -1, double Price = -1, string ProductName = "-1", int ProductTypeId = -1, double ABV = -1, 
+                                    double Volume = -1, string VolumeUnit = "-1", string ContainerType = "-1", int ContainerQty = -1, string DeviceId = "-1",
+                                    int Rating = -1, int AddToFavouritesList = -1)
         {
-            return repository.UpdateProduct(ProductId, StoreId, Price, ProductName, ProductTypeId, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
+            return repository.UpdateProduct(ProductId, StoreId, Price, ProductName, ProductTypeId, ABV, Volume, VolumeUnit, ContainerType, ContainerQty, DeviceId, Rating, AddToFavouritesList);
         }
 
-        //public String InsertProduct(string UPC, string ProductName, int ProductTypeID, int StoreId, double Price, double ABV, double Volume, string VolumeUnit, string ContainerType, string DeviceId = "", int Rating = 0)
-        //{
-        //    return repository.InsertProduct(UPC, ProductName, ProductTypeID, StoreId, Price, ABV, Volume, VolumeUnit, ContainerType, DeviceId, Rating);
-        //}
 
         public Dictionary<int, string> getParentTypes()
         {
@@ -158,5 +156,10 @@ namespace Boozic.Services
         {
             return repository.addToFavourites(DeviceId, ProductId);
         }
+
+        public String deleteFromFavourites(string DeviceId, string ProductIds)
+        {
+            return repository.deleteFromFavourites(DeviceId, ProductIds);
+            }
     }
 }
