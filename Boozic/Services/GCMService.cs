@@ -35,14 +35,14 @@ namespace Boozic.Services
             return repository.GetByDeviceID(DeviceId);
         }
 
-        public string SendNotification(string message)
+        public string SendNotification(string message, string DeviceId)
         {
             try
             {
 
                 string GoogleAPIKey = appSettingsService.GetGCMServerAPIKey();
                 //TODO: update deviceId
-                string RegToken = repository.GetByDeviceID("794e6e0e3487c59e").RegistrationToken;
+                string RegToken = repository.GetByDeviceID(DeviceId).RegistrationToken;
 
                 HttpWebRequest Request = (HttpWebRequest)WebRequest.Create("https://android.googleapis.com/gcm/send");
                 Request.Method = "POST";

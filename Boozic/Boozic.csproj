@@ -120,6 +120,9 @@
     <Compile Include="Product.cs">
       <DependentUpon>Boozic.tt</DependentUpon>
     </Compile>
+    <Compile Include="ProductFlag.cs">
+      <DependentUpon>Boozic.tt</DependentUpon>
+    </Compile>
     <Compile Include="ProductRating.cs">
       <DependentUpon>Boozic.tt</DependentUpon>
     </Compile>

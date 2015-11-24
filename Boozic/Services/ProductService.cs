@@ -64,8 +64,6 @@ namespace Boozic.Services
 
 
 
-
-
             _proxy = XmlRpcProxyGen.Create<IUPCDatabase>();
             XmlRpcStruct request = new XmlRpcStruct();
             XmlRpcStruct response = new XmlRpcStruct();
@@ -106,6 +104,8 @@ namespace Boozic.Services
                 pr.VolumeUnit = pi.VolumeUnit;
                 pr.TypeDetailsId = 4;
                 pi.ProductId = repository.addProduct(pr);
+                pi.ContainerType = "-1";
+                pi.ContainerQty = -1;
 
             }
             else
@@ -161,5 +161,10 @@ namespace Boozic.Services
         {
             return repository.deleteFromFavourites(DeviceId, ProductIds);
             }
+
+        public String flagProduct(string DeviceId, int ProductId, int ReasonId)
+        {
+            return repository.flagProduct(DeviceId, ProductId, ReasonId);
+        }
     }
 }

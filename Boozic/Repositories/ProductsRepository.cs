@@ -52,9 +52,18 @@ namespace Boozic.Repositories
                     pr.ProductTypeId = (int)tmpPr.TypeDetailsId;
                     pr.UPC = tmpPr.UPC;
                     pr.Volume = (double)tmpPr.Volume.GetValueOrDefault();
-                    pr.VolumeUnit = tmpPr.VolumeUnit;
-                    pr.ContainerType = tmpPr.ContainerType;
-                    pr.ContainerQty = (int)tmpPr.ContainerQty;
+                    if (tmpPr.VolumeUnit != null)
+                        pr.VolumeUnit = tmpPr.VolumeUnit;
+                    else
+                        pr.VolumeUnit = "-1";
+                    if (tmpPr.ContainerType != null)
+                        pr.ContainerType = tmpPr.ContainerType;
+                    else
+                        pr.ContainerType = "-1";
+                    if (tmpPr.ContainerQty != null)
+                        pr.ContainerQty = (int)tmpPr.ContainerQty;
+                    else
+                        pr.ContainerQty = (int)-1;
                     pr.ABV = (double)tmpPr.ABV.GetValueOrDefault();
                     pr.IsFoundInDatabase = 0;
 
@@ -131,9 +140,18 @@ namespace Boozic.Repositories
                 tmpProductInfo.ProductTypeId = p.TypeDetailsId;
                 tmpProductInfo.UPC = p.UPC;
                 tmpProductInfo.Volume = (double)p.Volume.GetValueOrDefault();
-                tmpProductInfo.VolumeUnit = p.VolumeUnit;
-                tmpProductInfo.ContainerType = p.ContainerType;
-                tmpProductInfo.ContainerQty = (int)p.ContainerQty;
+                if (p.VolumeUnit != null)
+                    tmpProductInfo.VolumeUnit = p.VolumeUnit;
+                else
+                    tmpProductInfo.VolumeUnit = "-1";
+                if (p.ContainerType != null)
+                    tmpProductInfo.ContainerType = p.ContainerType;
+                else
+                    tmpProductInfo.ContainerType = "-1";
+                if (p.ContainerQty != null)
+                    tmpProductInfo.ContainerQty = (int)p.ContainerQty;
+                else
+                    tmpProductInfo.ContainerQty = (int)-1;
                 tmpProductInfo.ABV = (double)p.ABV.GetValueOrDefault();
                 tmpProductInfo.IsFoundInDatabase = 0;
 
@@ -363,6 +381,8 @@ namespace Boozic.Repositories
                                     int Rating = -1, int AddToFavouritesList = -1)
         {
             String returnMessage = "Completed Succesfully";
+            bool sendNotificaitons = false;
+            string GCMmessage = "Sale Price for $";
             try
             {
 
@@ -387,6 +407,12 @@ namespace Boozic.Repositories
                     ProductsPrice aProductPrice = sdContext.ProductsPrices.SingleOrDefault(x => x.ProductId == (int)ProductId && x.StoreID == (int)StoreId);
                     if (aProductPrice != null)
                     {
+                        if (aProductPrice.Price > (decimal)Price)
+                        {
+                            sendNotificaitons = true;
+                            GCMmessage += Price;
+
+                        }
                         aProductPrice.Price = (decimal)Price;
                         aProductPrice.LastUpdated = DateTime.Now;
                     }
@@ -468,7 +494,7 @@ namespace Boozic.Repositories
                             f.ProductId = ProductId;
                             f.DeviceId = DeviceId;
                             sdContext.UserFavourites.Add(f);
-                           
+
                         }
                     }
 
@@ -482,6 +508,24 @@ namespace Boozic.Repositories
             catch (Exception ex)
             {
                 returnMessage = ex.Message;
+            }
+
+            if (sendNotificaitons)
+            {
+                GCMService gs = new GCMService(new GCMRepository(new BoozicEntities()));
+                List<UserFavourite> lstFav = sdContext.UserFavourites.ToList().FindAll(delegate(UserFavourite s) { return s.ProductId == ProductId; });
+                foreach (UserFavourite fav in lstFav)
+                {
+                    GCMRegKey gcm = sdContext.GCMRegKeys.FirstOrDefault(delegate(GCMRegKey s) { return s.DeviceId == fav.DeviceId; });
+                    Store st = sdContext.Stores.FirstOrDefault(delegate(Store s) { return s.Id == StoreId; });
+                    GCMmessage += " at " + st.StoreName + "\n " + st.Address;
+                    gs.SendNotification(GCMmessage, gcm.RegistrationToken);
+                }
+
+
+
+
+
             }
             return returnMessage;
         }
@@ -586,8 +630,8 @@ namespace Boozic.Repositories
             }
 
 
-            //Default Radius =2 Miles
-            //lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CheapestStore.Distance <= Radius || s.ClosestStore.Distance <= Radius; });
+           //Default Radius =2 Miles
+            lstProductInfo = lstProductInfo.FindAll(delegate(Models.ProductInfo s) { return s.CheapestStore.Distance <= 10 || s.ClosestStore.Distance <= 10; });
 
             return lstProductInfo;
         }
@@ -619,7 +663,7 @@ namespace Boozic.Repositories
         public String deleteFromFavourites(string DeviceId, string ProductIds)
         {
             String returnMessage = "Completed Succesfully";
-            string[] arrProductIds =ProductIds.Split(',');
+            string[] arrProductIds = ProductIds.Split(',');
 
             for (int i = 0; i < arrProductIds.Length; i++)
             {
@@ -640,6 +684,12 @@ namespace Boozic.Repositories
                 }
             }
             return returnMessage;
+        }
+
+        public String flagProduct(string DeviceId, int ProductId, int ReasonId)
+        {
+                //TODO:
+            return "";
         }
     }
 }

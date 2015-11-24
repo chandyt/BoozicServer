@@ -14,6 +14,16 @@
           <Property Name="RegistrationToken" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="RegisterdOn" Type="datetime" />
         </EntityType>
+        <EntityType Name="ProductFlag">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DeviceId" Type="varchar" MaxLength="50" />
+          <Property Name="ProductId" Type="int" />
+          <Property Name="Reason" Type="int" />
+          <Property Name="FlaggedOn" Type="datetime" />
+        </EntityType>
         <EntityType Name="ProductRatings">
           <Key>
             <PropertyRef Name="ProductId" />
@@ -132,6 +142,18 @@ warning 6002: The table/view 'Boozic.dbo.vwProductsWithStorePrice' does not have
           <Property Name="Rating5" Type="int" />
           <Property Name="CombinedRating" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
+        <Association Name="FK_ProductFlag_Products">
+          <End Role="Products" Type="Self.Products" Multiplicity="0..1" />
+          <End Role="ProductFlag" Type="Self.ProductFlag" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProductFlag">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ProductRatings_Products">
           <End Role="Products" Type="Self.Products" Multiplicity="1" />
           <End Role="ProductRatings" Type="Self.ProductRatings" Multiplicity="0..1" />
@@ -218,6 +240,7 @@ warning 6002: The table/view 'Boozic.dbo.vwProductsWithStorePrice' does not have
         </Association>
         <EntityContainer Name="BoozicModelStoreContainer">
           <EntitySet Name="GCMRegKey" EntityType="Self.GCMRegKey" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductFlag" EntityType="Self.ProductFlag" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProductRatings" EntityType="Self.ProductRatings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProductsPrice" EntityType="Self.ProductsPrice" Schema="dbo" store:Type="Tables" />
@@ -255,6 +278,10 @@ warning 6002: The table/view 'Boozic.dbo.vwProductsWithStorePrice' does not have
 [vwProductsWithStorePrice].[CombinedRating] AS [CombinedRating]
 FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQuery>
           </EntitySet>
+          <AssociationSet Name="FK_ProductFlag_Products" Association="Self.FK_ProductFlag_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="ProductFlag" EntitySet="ProductFlag" />
+          </AssociationSet>
           <AssociationSet Name="FK_ProductRatings_Products" Association="Self.FK_ProductRatings_Products">
             <End Role="Products" EntitySet="Products" />
             <End Role="ProductRatings" EntitySet="ProductRatings" />
@@ -306,6 +333,7 @@ FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQue
           <NavigationProperty Name="TypesDetail1" Relationship="BoozicModel.FK_Products_TypesDetail1" FromRole="Product" ToRole="TypesDetail" />
           <NavigationProperty Name="UserFavourites" Relationship="BoozicModel.FK_UserFavourites_Products" FromRole="Product" ToRole="UserFavourite" />
           <Property Name="ContainerQty" Type="Int32" />
+          <NavigationProperty Name="ProductFlags" Relationship="BoozicModel.FK_ProductFlag_Products" FromRole="Product" ToRole="ProductFlag" />
         </EntityType>
         <EntityType Name="Store">
           <Key>
@@ -366,6 +394,11 @@ FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQue
             <End Role="UserFavourite" EntitySet="UserFavourites" />
           </AssociationSet>
           <EntitySet Name="vwProductsWithStorePrices" EntityType="BoozicModel.vwProductsWithStorePrice" />
+          <EntitySet Name="ProductFlags" EntityType="BoozicModel.ProductFlag" />
+          <AssociationSet Name="FK_ProductFlag_Products" Association="BoozicModel.FK_ProductFlag_Products">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="ProductFlag" EntitySet="ProductFlags" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Setting">
           <Key>
@@ -552,6 +585,29 @@ FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQue
           <Property Name="CombinedRating" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="StoreName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="ProductFlag">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DeviceId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProductId" Type="Int32" />
+          <Property Name="Reason" Type="Int32" />
+          <Property Name="FlaggedOn" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Product" Relationship="BoozicModel.FK_ProductFlag_Products" FromRole="ProductFlag" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_ProductFlag_Products">
+          <End Type="BoozicModel.Product" Role="Product" Multiplicity="0..1" />
+          <End Type="BoozicModel.ProductFlag" Role="ProductFlag" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProductFlag">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -689,6 +745,17 @@ FROM [dbo].[vwProductsWithStorePrice] AS [vwProductsWithStorePrice]</DefiningQue
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
                 <ScalarProperty Name="StoreID" ColumnName="StoreID" />
                 <ScalarProperty Name="PriceID" ColumnName="PriceID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductFlags">
+            <EntityTypeMapping TypeName="BoozicModel.ProductFlag">
+              <MappingFragment StoreEntitySet="ProductFlag">
+                <ScalarProperty Name="FlaggedOn" ColumnName="FlaggedOn" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="DeviceId" ColumnName="DeviceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

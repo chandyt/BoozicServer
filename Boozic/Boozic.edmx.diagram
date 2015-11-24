@@ -23,6 +23,8 @@
         <EntityTypeShape EntityType="BoozicModel.UserFavourite" Width="1.5" PointX="5.25" PointY="0.875" />
         <AssociationConnector Association="BoozicModel.FK_UserFavourites_Products" />
         <EntityTypeShape EntityType="BoozicModel.vwProductsWithStorePrice" Width="1.5" PointX="0.75" PointY="7.75" />
+        <EntityTypeShape EntityType="BoozicModel.ProductFlag" Width="1.5" PointX="5.25" PointY="8.875" />
+        <AssociationConnector Association="BoozicModel.FK_ProductFlag_Products" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

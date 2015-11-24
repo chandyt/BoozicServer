@@ -11,7 +11,7 @@ namespace Boozic.Services
         void Add(GCMRegKey aRegKey);
         void Update(GCMRegKey aRegKey);
         GCMRegKey GetByDeviceID(string DeviceId);
-        string SendNotification( string message);
+        string SendNotification(string message, string DeviceId);
 
         string SendEmail(string emailBody);
     }

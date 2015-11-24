@@ -19,6 +19,7 @@ namespace Boozic
             this.ProductsPrices = new HashSet<ProductsPrice>();
             this.UserProductRatings = new HashSet<UserProductRating>();
             this.UserFavourites = new HashSet<UserFavourite>();
+            this.ProductFlags = new HashSet<ProductFlag>();
         }
     
         public int Id { get; set; }
@@ -36,5 +37,6 @@ namespace Boozic
         public virtual ICollection<UserProductRating> UserProductRatings { get; set; }
         public virtual TypesDetail TypesDetail1 { get; set; }
         public virtual ICollection<UserFavourite> UserFavourites { get; set; }
+        public virtual ICollection<ProductFlag> ProductFlags { get; set; }
     }
 }

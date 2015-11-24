@@ -31,6 +31,8 @@ namespace Boozic.Repositories
         String addToFavourites(string DeviceId, int ProductId);
 
         String deleteFromFavourites(string DeviceId, string ProductIds);
+
+        String flagProduct(string DeviceId, int ProductId, int ReasonId);
     }
 
 }

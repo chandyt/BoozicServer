@@ -54,12 +54,12 @@ namespace Boozic.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        public IHttpActionResult SendMessage(string Message)
-        {
-            gcmService.SendNotification(Message);
-            return Ok();
-        }
+        //[HttpGet]
+        //public IHttpActionResult SendMessage(string Message)
+        //{
+        //    //gcmService.SendNotification(Message);
+        //    //return Ok();
+        //}
 
         [HttpGet]
         public IHttpActionResult SendEmail(string EmailBody)

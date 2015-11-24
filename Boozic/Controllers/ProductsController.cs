@@ -137,5 +137,12 @@ namespace Boozic.Controllers
             return Ok(status);
         }
 
+        [HttpGet]
+        public IHttpActionResult flagProduct(string DeviceId, int ProductId, int ReasonId)
+        {
+            string status = productService.flagProduct(DeviceId, ProductId, ReasonId);
+            return Ok(status);
+        }
+
     }
 }

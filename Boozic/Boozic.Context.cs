@@ -36,5 +36,6 @@ namespace Boozic
         public DbSet<UserProductRating> UserProductRatings { get; set; }
         public DbSet<UserFavourite> UserFavourites { get; set; }
         public DbSet<vwProductsWithStorePrice> vwProductsWithStorePrices { get; set; }
+        public DbSet<ProductFlag> ProductFlags { get; set; }
     }
 }
