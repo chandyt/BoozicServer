@@ -429,59 +429,62 @@ namespace Boozic.Repositories
 
                 if (DeviceId != "-1")
                 {
-                    UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)ProductId && x.DeviceId == DeviceId);
-                    if (aUserProductRating != null)
-                        aUserProductRating.Rating = (int)Rating;
-                    else
+                    if (Rating > -1)
                     {
-                        aUserProductRating = new UserProductRating();
-                        aUserProductRating.DeviceId = DeviceId;
-                        aUserProductRating.Rating = Rating;
-                        aUserProductRating.ProductId = ProductId;
-                        sdContext.UserProductRatings.Add(aUserProductRating);
-                    }
+                        UserProductRating aUserProductRating = sdContext.UserProductRatings.SingleOrDefault(x => x.ProductId == (int)ProductId && x.DeviceId == DeviceId);
+                        if (aUserProductRating != null)
+                            aUserProductRating.Rating = (int)Rating;
+                        else
+                        {
+                            aUserProductRating = new UserProductRating();
+                            aUserProductRating.DeviceId = DeviceId;
+                            aUserProductRating.Rating = Rating;
+                            aUserProductRating.ProductId = ProductId;
+                            sdContext.UserProductRatings.Add(aUserProductRating);
+                        }
 
 
-                    ProductRating aProductRating = sdContext.ProductRatings.SingleOrDefault(x => x.ProductId == (int)ProductId);
-                    if (aProductRating != null)
-                    {
-                        if (Rating == 1)
-                            aProductRating.Rating1 += 1;
-                        if (Rating == 2)
-                            aProductRating.Rating2 += 1;
-                        if (Rating == 3)
-                            aProductRating.Rating3 += 1;
-                        if (Rating == 4)
-                            aProductRating.Rating4 += 1;
-                        if (Rating == 5)
-                            aProductRating.Rating5 += 1;
+                        ProductRating aProductRating = sdContext.ProductRatings.SingleOrDefault(x => x.ProductId == (int)ProductId);
+                        if (aProductRating != null)
+                        {
+                            if (Rating == 1)
+                                aProductRating.Rating1 += 1;
+                            if (Rating == 2)
+                                aProductRating.Rating2 += 1;
+                            if (Rating == 3)
+                                aProductRating.Rating3 += 1;
+                            if (Rating == 4)
+                                aProductRating.Rating4 += 1;
+                            if (Rating == 5)
+                                aProductRating.Rating5 += 1;
 
-                        aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
-                    }
-                    else
-                    {
-                        aProductRating = new ProductRating();
-                        aProductRating.ProductId = ProductId;
-                        aProductRating.Rating1 = 0;
-                        aProductRating.Rating2 = 0;
-                        aProductRating.Rating3 = 0;
-                        aProductRating.Rating4 = 0;
-                        aProductRating.Rating5 = 0;
-                        aProductRating.CombinedRating = 0;
+                            aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
+                        }
+                        else
+                        {
+                            aProductRating = new ProductRating();
+                            aProductRating.ProductId = ProductId;
+                            aProductRating.Rating1 = 0;
+                            aProductRating.Rating2 = 0;
+                            aProductRating.Rating3 = 0;
+                            aProductRating.Rating4 = 0;
+                            aProductRating.Rating5 = 0;
+                            aProductRating.CombinedRating = 0;
 
-                        if (Rating == 1)
-                            aProductRating.Rating1 = 1;
-                        if (Rating == 2)
-                            aProductRating.Rating2 = 1;
-                        if (Rating == 3)
-                            aProductRating.Rating3 = 1;
-                        if (Rating == 4)
-                            aProductRating.Rating4 = 1;
-                        if (Rating == 5)
-                            aProductRating.Rating5 = 1;
+                            if (Rating == 1)
+                                aProductRating.Rating1 = 1;
+                            if (Rating == 2)
+                                aProductRating.Rating2 = 1;
+                            if (Rating == 3)
+                                aProductRating.Rating3 = 1;
+                            if (Rating == 4)
+                                aProductRating.Rating4 = 1;
+                            if (Rating == 5)
+                                aProductRating.Rating5 = 1;
 
-                        aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
-                        sdContext.ProductRatings.Add(aProductRating);
+                            aProductRating.CombinedRating = (decimal)findAverageRating((int)aProductRating.Rating1, (int)aProductRating.Rating2, (int)aProductRating.Rating3, (int)aProductRating.Rating4, (int)aProductRating.Rating5);
+                            sdContext.ProductRatings.Add(aProductRating);
+                        }
                     }
 
                     if (AddToFavouritesList == 1)
@@ -688,8 +691,28 @@ namespace Boozic.Repositories
 
         public String flagProduct(string DeviceId, int ProductId, int ReasonId)
         {
-                //TODO:
-            return "";
-        }
+            String returnMessage = "Completed Succesfully";
+            try
+            {
+                List<ProductFlag> lstFlg = sdContext.ProductFlags.ToList().FindAll(delegate(ProductFlag s) { return s.DeviceId == DeviceId && s.ProductId == ProductId; });
+                if (lstFlg.Count == 0)
+                {
+                    ProductFlag f = new ProductFlag();
+                    f.ProductId = ProductId;
+                    f.DeviceId = DeviceId;
+                    f.FlaggedOn = DateTime.Now;
+                    f.Reason = ReasonId;
+                    sdContext.ProductFlags.Add(f);
+                    sdContext.SaveChanges();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                returnMessage = ex.Message;
+            }
+            return returnMessage;
+            
+       }
     }
 }
